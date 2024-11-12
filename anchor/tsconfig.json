@@ -1,0 +1,23 @@
+// anchor/tsconfig.test.json
+{
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@project/anchor": ["./src"]
+    }
+  },
+  "include": ["tests/**/*", "src/**/*"],
+  "exclude": ["node_modules"]
+}
