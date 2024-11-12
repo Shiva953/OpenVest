@@ -15,7 +15,7 @@ export default function VestingFeature() {
     <div className="flex flex-col">
       <AppHero
         title="Token Vesting"
-        subtitle={'Create a New Vesting Account'}
+        subtitle={'Reward Employees using Vested Tokens'}
       >
         <p className="mb-2">
           <ExplorerLink path={`account/${programId}`} label={ellipsify(programId.toString())} />

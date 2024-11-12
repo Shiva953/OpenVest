@@ -40,6 +40,7 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.4.1",
     "solana-bankrun": "^0.4.0",
+    "sonner": "^1.7.0",
     "spl-token-bankrun": "^0.2.6",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"

@@ -5,7 +5,7 @@ import { useConnection, useWallet} from '@solana/wallet-adapter-react'
 import {Cluster, Keypair, PublicKey} from '@solana/web3.js'
 import {useMutation, useQuery} from '@tanstack/react-query'
 import {useMemo} from 'react'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 import {useCluster} from '../cluster/cluster-data-access'
 import {useAnchorProvider} from '../solana/solana-provider'
 import {useTransactionToast} from '../ui/ui-layout'
@@ -124,7 +124,6 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
       return tx
     },
   })
-
 
   return {
     getVestingAccountStateQuery,

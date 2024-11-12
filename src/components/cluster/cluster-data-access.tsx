@@ -4,7 +4,7 @@ import { clusterApiUrl, Connection } from '@solana/web3.js'
 import { atom, useAtomValue, useSetAtom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 import { createContext, ReactNode, useContext } from 'react'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 
 export interface Cluster {
   name: string

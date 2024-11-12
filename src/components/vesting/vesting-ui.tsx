@@ -24,13 +24,6 @@ export function VestingCreate() {
   
   return (
     <main className="container py-4">
-        {/* <div className="mb-8 text-center">
-          <h1 className="mb-4 text-4xl font-bold">Token Vesting</h1>
-          <p className="text-muted-foreground">
-            Create a new vesting account.
-          </p>
-        </div> */}
-
         <div className="mb-2 flex justify-center">
           <Dialog>
             <DialogTrigger asChild>

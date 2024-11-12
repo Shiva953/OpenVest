@@ -4,11 +4,14 @@ import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 import * as React from 'react'
 import {ReactNode, Suspense, useEffect, useRef} from 'react'
-import toast, {Toaster} from 'react-hot-toast'
+// import { Toast } from '../ui/toast'
+// import { Toaster } from '../ui/toaster'
+import { Toaster, toast } from 'sonner'
 
 import {AccountChecker} from '../account/account-ui'
 import {ClusterChecker, ClusterUiSelect, ExplorerLink} from '../cluster/cluster-ui'
 import {WalletButton} from '../solana/solana-provider'
+import { ExternalLink } from 'lucide-react';
 
 export function UiLayout({ children, links }: { children: ReactNode; links: { label: string; path: string }[] }) {
   const pathname = usePathname()
@@ -151,10 +154,50 @@ export function ellipsify(str = '', len = 4) {
 export function useTransactionToast() {
   return (signature: string) => {
     toast.success(
-      <div className={'text-center'}>
-        <div className="text-lg">Transaction sent</div>
-        <ExplorerLink path={`tx/${signature}`} label={'View Transaction'} className="btn btn-xs btn-primary" />
+      <div className="rounded-lg shadow-lg p-4 max-w-sm w-full">
+        <div className="space-y-3">
+          {/* Success Icon */}
+          <div className="flex justify-center">
+            <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+              <svg
+                className="h-6 w-6 text-green-600 dark:text-green-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* Message */}
+          <div className="text-center">
+            <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+              Transaction Sent
+            </h3>
+          </div>
+
+          {/* View Transaction Button */}
+          <a
+            href={`https://explorer.solana.com/tx/${signature}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-sm font-medium rounded-md transition-colors duration-200"
+          >
+            View Transaction
+            <ExternalLink className="h-4 w-4" />
+          </a>
+        </div>
       </div>,
-    )
-  }
+      {
+        duration: 4000,
+        position: 'bottom-right',
+      }
+    );
+  };
 }
