@@ -54,18 +54,9 @@ describe("Vesting Smart Contract Tests", () => {
       ]
     );
 
-    // const wall = new NodeWallet(anchor.AnchorProvider.env())
     provider = new BankrunProvider(context);
     provider.connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-    // anchor.setProvider(provider);
-    // provider = {
-    //   context,
-    //   ...anchor.AnchorProvider.env(),
-    //   ...anchor.AnchorProvider.env().sendAll,
-    //   ...anchor.AnchorProvider.env().simulate
-    // };
-    // provider.context = context;
     
     anchor.setProvider(provider);
 
@@ -123,45 +114,18 @@ describe("Vesting Smart Contract Tests", () => {
       })
       .rpc({ commitment: "confirmed" });
 
-      try {
-        const latestBlockhash = await program.provider.connection.getLatestBlockhash();
-        await program.provider.connection.confirmTransaction(
-            {
-                signature: tx,
-                ...latestBlockhash,
-            },
-            "confirmed"
-        );
-        console.log("Transaction confirmed:", tx);
+      // Only fetch account data after confirmation
+      const vestingAccountData = await program.account.vestingAccount.fetch(
+          vestingAccountKey,
+          "confirmed"
+      );
 
-        // Only fetch account data after confirmation
-        const vestingAccountData = await program.account.vestingAccount.fetch(
-            vestingAccountKey,
-            "confirmed"
-        );
+      console.log(
+          "Vesting Account Data:",
+          JSON.stringify(vestingAccountData, null, 2)
+      );
 
-        console.log(
-            "Vesting Account Data:",
-            JSON.stringify(vestingAccountData, null, 2)
-        );
-
-        console.log("create_vesting_account txn signature:", tx);
-
-    } catch (error) {
-        console.error("Error confirming transaction:", error);
-    }
-
-    // const vestingAccountData = await program.account.vestingAccount.fetch(
-    //   vestingAccountKey,
-    //   "finalized"
-    // );
-
-    // console.log(
-    //   "Vesting Account Data:",
-    //   JSON.stringify(vestingAccountData, null, 2)
-    // );
-
-    console.log("Create Vesting Account Transaction Signature:", tx);
+      console.log("create_vesting_account txn signature:", tx);
   });
 
   // employer(signer) -> TREASURY Token Account

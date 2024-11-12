@@ -1,0 +1,47 @@
+commit 8f2e0db9d7337b1f8fb1e2c97b0b3e3608561062
+Author: Shiva953 <b22070@students.iitmandi.ac.in>
+Date:   Tue Nov 12 09:50:24 2024 +0530
+
+    removed uneccessary vars
+
+commit d36ee8363c8bfb6ac5eea57b63c6ff48f84cf2a2
+Author: Shiva953 <b22070@students.iitmandi.ac.in>
+Date:   Mon Nov 11 21:41:22 2024 +0530
+
+    basic mvp done
+
+commit 89532483fd986606071972df4871286f01668237
+Author: Shiva953 <b22070@students.iitmandi.ac.in>
+Date:   Mon Nov 11 21:28:56 2024 +0530
+
+    basic layout done, works now, todo: better ui + handling edge cases better
+
+commit 6628a8174dbca01affed6ee5818f55aa55ef41c7
+Author: Shiva953 <b22070@students.iitmandi.ac.in>
+Date:   Mon Nov 11 21:02:25 2024 +0530
+
+    better checks for vesting account state data & company name
+
+commit 14352637d265ae0291e734d3d560f9cbb832b2ad
+Author: Shiva953 <b22070@students.iitmandi.ac.in>
+Date:   Mon Nov 11 20:56:07 2024 +0530
+
+    vesting accounts refetch + error handling
+
+commit 55ceab2a9c33610f7c32a91352600296516c9c4d
+Author: Shiva953 <b22070@students.iitmandi.ac.in>
+Date:   Mon Nov 11 20:52:18 2024 +0530
+
+    changed query keys
+
+commit 1aeae80ec8b5eed000255dcdf101ad9d6f69b795
+Author: Shiva953 <b22070@students.iitmandi.ac.in>
+Date:   Mon Nov 11 20:49:57 2024 +0530
+
+    (ft): frontend implementation done
+
+commit a11432b278dc54aa2aba365757194065440ad369
+Author: Shiva953 <b22070@students.iitmandi.ac.in>
+Date:   Mon Nov 11 09:54:15 2024 +0530
+
+    chore: initial commit
