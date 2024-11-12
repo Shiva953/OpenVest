@@ -1,11 +1,8 @@
 'use client'
 
 import { Keypair, PublicKey } from '@solana/web3.js'
-import { ellipsify, useTransactionToast } from '../ui/ui-layout'
-import { ExplorerLink } from '../cluster/cluster-ui'
 import { useVestingProgram, useVestingProgramAccount } from './vesting-data-access'
 import { useState, useEffect, useMemo } from 'react'
-import { useWallet, useConnection } from '@solana/wallet-adapter-react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
@@ -26,19 +23,19 @@ export function VestingCreate() {
   const {data, isError} = createVestingAccountMutation;
   
   return (
-    <main className="container py-8">
-        <div className="mb-8 text-center">
+    <main className="container py-4">
+        {/* <div className="mb-8 text-center">
           <h1 className="mb-4 text-4xl font-bold">Token Vesting</h1>
           <p className="text-muted-foreground">
             Create a new vesting account.
           </p>
-        </div>
+        </div> */}
 
-        <div className="mb-8 flex justify-center">
+        <div className="mb-2 flex justify-center">
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-black"
               >
                 Create New Vesting Account
               </Button>
@@ -47,7 +44,7 @@ export function VestingCreate() {
               <DialogHeader>
                 <DialogTitle>Create New Vesting Account</DialogTitle>
               </DialogHeader>
-              <div className="grid gap-4 py-4">
+              <div className="grid gap-4 py-1">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="company" className="text-right">
                     Company Name
@@ -88,34 +85,50 @@ export function VestingCreate() {
 }
 
 export function VestingList() {
-  const { program, getProgramAccount, vestingAccounts } = useVestingProgram()
+  const { program, getProgramAccount, vestingAccounts } = useVestingProgram();
 
   if (getProgramAccount.isLoading) {
-    return <span className="loading loading-spinner loading-lg"></span>
+    return (
+      <div className="flex justify-center items-center h-24">
+        <span className="loading loading-spinner loading-lg" />
+      </div>
+    );
   }
+
   if (!getProgramAccount.data?.value) {
     return (
-      <div className="alert alert-info flex justify-center">
-        <span>Program account not found. Make sure you have deployed the program and are on the correct cluster.</span>
+      <div className="flex justify-center p-2">
+        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg max-w-2xl">
+          <span>Program account not found. Make sure you have deployed the program and are on the correct cluster.</span>
+        </div>
       </div>
-    )
+    );
   }
+
   return (
-    <div className={'space-y-6'}>
-      {vestingAccounts.isLoading ? (
-        <span className="loading loading-spinner loading-lg"></span>
-      ) : vestingAccounts.data?.length ? (
-        <div className="grid md:grid-cols-2 gap-4">
-          {vestingAccounts.data?.map((account) => (
-            <VestingCard key={account.publicKey.toString()} account={account.publicKey.toBase58()} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center">
-          <h2 className={'text-2xl'}>No Vesting Accounts</h2>
-          No Vesting Accounts found. Create one above to get started.
-        </div>
-      )}
+    <div className="px-4 -mt-4"> {/* Negative margin to reduce space from hero */}
+      <div className="max-w-7xl mx-auto bg-gray-50 rounded-xl shadow-sm p-4">
+        {vestingAccounts.isLoading ? (
+          <div className="flex justify-center items-center h-24">
+            <span className="loading loading-spinner loading-lg" />
+          </div>
+        ) : vestingAccounts.data?.length ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {vestingAccounts.data?.map((account) => (
+              <div key={account.publicKey.toString()} className="transform transition-all duration-200 hover:scale-[1.02]">
+                <VestingCard account={account.publicKey.toBase58()} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-4">
+            <h2 className="text-2xl font-semibold mb-1">No Vesting Accounts</h2>
+            <p className="text-gray-600">
+              No Vesting Accounts found. Create one above to get started.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
-  )
+  );
 }

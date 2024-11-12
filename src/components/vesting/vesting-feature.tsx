@@ -12,14 +12,12 @@ export default function VestingFeature() {
   const { programId } = useVestingProgram()
 
   return publicKey ? (
-    <div>
+    <div className="flex flex-col">
       <AppHero
-        title="Vesting"
-        subtitle={
-          'Create a New Vesting Account'
-        }
+        title="Token Vesting"
+        subtitle={'Create a New Vesting Account'}
       >
-        <p className="mb-6">
+        <p className="mb-2">
           <ExplorerLink path={`account/${programId}`} label={ellipsify(programId.toString())} />
         </p>
         <VestingCreate />
@@ -28,7 +26,7 @@ export default function VestingFeature() {
     </div>
   ) : (
     <div className="max-w-4xl mx-auto">
-      <div className="hero py-[64px]">
+      <div className="hero py-8">
         <div className="hero-content text-center">
           <WalletButton />
         </div>

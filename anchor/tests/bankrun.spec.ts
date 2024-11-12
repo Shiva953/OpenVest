@@ -67,7 +67,6 @@ describe("Vesting Smart Contract Tests", () => {
     employer = provider.wallet.payer;
 
     console.log("Employer: ", employer.publicKey.toBase58())
-    console.log("Employer PVK: ", employer.secretKey.toLocaleString())
 
     // Create a new mint
     // @ts-ignore

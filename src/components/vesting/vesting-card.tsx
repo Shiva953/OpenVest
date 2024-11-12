@@ -64,50 +64,74 @@ export default function VestingCard({ account }: { account: string }){
       );
 
     if(isLoading){
-        return (
-            <span className="loading loading-spinner loading-lg"></span>
-        )
+      return (
+        <Card className="bg-white h-full animate-pulse">
+          <div className="p-6">
+            <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+            <div className="space-y-3">
+              <div className="h-3 bg-gray-200 rounded"></div>
+              <div className="h-3 bg-gray-200 rounded"></div>
+            </div>
+          </div>
+        </Card>
+      );
     }
 
-    return(
-        <>
-        <Card className="bg-card">
-              <CardHeader>
-                <CardTitle>{companyName}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Start Time</Label>
-                    <Input type="number" onChange={(e) => setStartTime(Number(e.target.value))}/>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>End Time</Label>
-                    <Input type="number" onChange={(e) => setEndTime(Number(e.target.value))}/>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Cliff Time</Label>
-                    <Input type="number" onChange={(e) => setCliffTime(Number(e.target.value))}/>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Total Allocation</Label>
-                    <Input type="number" onChange={(e) => setTotalAmount(Number(e.target.value))}/>
-                  </div>
-                </div>
-                <Button className="w-full" onClick={() => createEmployeeAccountMutation.mutateAsync({
-                    start_time: startTime,
-                    end_time: endTime,
-                    total_allocation_amount: totalAmount,
-                    cliff: cliffTime,
-                })}
-                disabled={createEmployeeAccountMutation.isPending}
-                >
-                  Create Employee Vesting Account
-                </Button>
-              </CardContent>
-            </Card>
-        </>
-    )
+    return (
+      <Card className="bg-white">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-semibold">{companyName}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-sm font-medium">Start Time</Label>
+              <Input 
+                type="number" 
+                onChange={(e) => setStartTime(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-sm font-medium">End Time</Label>
+              <Input 
+                type="number" 
+                onChange={(e) => setEndTime(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-sm font-medium">Cliff Time</Label>
+              <Input 
+                type="number" 
+                onChange={(e) => setCliffTime(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-sm font-medium">Total Allocation</Label>
+              <Input 
+                type="number" 
+                onChange={(e) => setTotalAmount(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
+          <Button 
+            className="w-full bg-black transition-colors mt-2"
+            onClick={() => createEmployeeAccountMutation.mutateAsync({
+              start_time: startTime,
+              end_time: endTime,
+              total_allocation_amount: totalAmount,
+              cliff: cliffTime,
+            })}
+            disabled={createEmployeeAccountMutation.isPending}
+          >
+            Create Employee Vesting Account
+          </Button>
+        </CardContent>
+      </Card>
+    );
 }
