@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/vesting.json`.
  */
 export type Vesting = {
-  "address": "FzR6wEre2MT9qUvfg5EyEuiWtC89EcBdGoq2fPBe6ybh",
+  "address": "H9koFdC9FyMzhQLj9roL8yUpnwiAMdmm8aYPg2zrULJ8",
   "metadata": {
     "name": "vesting",
     "version": "0.1.0",

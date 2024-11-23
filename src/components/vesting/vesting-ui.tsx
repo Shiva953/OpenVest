@@ -1,8 +1,7 @@
 'use client'
 
-import { Keypair, PublicKey } from '@solana/web3.js'
 import { useVestingProgram, useVestingProgramAccount } from './vesting-data-access'
-import { useState, useEffect, useMemo } from 'react'
+import { useState } from 'react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
@@ -16,8 +15,8 @@ import {
 import VestingCard from './vesting-card'
 
 export function VestingCreate() {
-  const [newCompany, setNewCompany] = useState('') || 'neutron'
-  const [newMintAddress, setNewMintAddress] = useState('') || 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+  const [newCompany, setNewCompany] = useState('')
+  const [newMintAddress, setNewMintAddress] = useState('');
   const {createVestingAccountMutation} = useVestingProgram();
 
   const {data, isError} = createVestingAccountMutation;
@@ -91,7 +90,7 @@ export function VestingList() {
   if (!getProgramAccount.data?.value) {
     return (
       <div className="flex justify-center p-2">
-        <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg max-w-2xl">
+        <div className="bg-blue-50 text-black px-4 py-2 rounded-lg max-w-2xl">
           <span>Program account not found. Make sure you have deployed the program and are on the correct cluster.</span>
         </div>
       </div>
@@ -99,7 +98,7 @@ export function VestingList() {
   }
 
   return (
-    <div className="px-4 -mt-4"> {/* Negative margin to reduce space from hero */}
+    <div className="px-4 -mt-4">
       <div className="max-w-7xl mx-auto bg-gray-50 rounded-xl shadow-sm p-4">
         {vestingAccounts.isLoading ? (
           <div className="flex justify-center items-center h-24">
