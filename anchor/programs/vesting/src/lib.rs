@@ -64,7 +64,7 @@ pub mod vesting {
       Ok(())
     }
 
-    pub fn claim_tokens(ctx: Context<ClaimTokens>, _company_name: String) -> Result<()> {
+    pub fn claim_tokens(ctx: Context<ClaimTokens>) -> Result<()> {
       //1. ALLOW GIVEN EMPLOYEE TO UNLOCK THE TOKENS + CLAIM ALL (UNLOCKED) VESTED TOKENS.
       // EMPLOYER TA -> TREASURY TOKEN ACCOUNT
       // LET IT REMAIN FOR CLIFF PERIOD, ON CLIFF ENDING TRANSFER FROM TREASURY TA -> EMPLOYEE TA

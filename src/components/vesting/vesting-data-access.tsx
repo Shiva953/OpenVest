@@ -95,6 +95,11 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
     queryFn: () => program.account.vestingAccount.fetch(account, "confirmed",)
   })
 
+  const getEmployeeVestingAccountStateQuery = useQuery({
+    queryKey: ["vesting", "fetch", { cluster, account }],
+    queryFn: () => program.account.employeeVestingAccount.fetch(account, "confirmed",)
+  })
+
 
   const createEmployeeAccountMutation = useMutation({
     mutationKey: ['vesting', 'create_employee_vesting_account'],
@@ -114,7 +119,7 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
 
   const claimTokensMutation = useMutation({
     mutationKey: ['vesting', 'claim_tokens'],
-    mutationFn: (company_name: string) => program.methods.claimTokens(company_name)
+    mutationFn: () => program.methods.claimTokens()
     .accounts({ 
       tokenProgram: TOKEN_PROGRAM_ID
      })
@@ -127,6 +132,7 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
 
   return {
     getVestingAccountStateQuery,
+    getEmployeeVestingAccountStateQuery,
     createEmployeeAccountMutation,
     claimTokensMutation
   }
