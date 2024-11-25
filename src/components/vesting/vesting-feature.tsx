@@ -8,6 +8,7 @@ import { Button } from '../ui/button'
 import { ExplorerLink } from '../cluster/cluster-ui'
 import { useVestingProgram } from './vesting-data-access'
 import { VestingCreate, VestingList } from './vesting-ui'
+import { AllocationList } from './employee-allocations-list'
 // import { AllocationList } from './vesting-card'
 
 export default function VestingFeature() {
