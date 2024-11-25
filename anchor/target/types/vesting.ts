@@ -168,7 +168,12 @@ export type Vesting = {
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "companyName",
+          "type": "string"
+        }
+      ]
     },
     {
       "name": "createEmployeeVesting",

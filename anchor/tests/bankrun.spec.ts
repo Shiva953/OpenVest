@@ -173,7 +173,7 @@ describe("Vesting Smart Contract Tests", () => {
     console.log("Employee account", employeeVestingAccount.toBase58());
 
     const tx3 = await program2.methods
-      .claimTokens()
+      .claimTokens(companyName)
       .accounts({
         tokenProgram: TOKEN_PROGRAM_ID,
       })

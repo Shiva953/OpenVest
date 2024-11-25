@@ -2,14 +2,14 @@
 
 import {getVestingProgram, getVestingProgramId} from '@project/anchor'
 import { useConnection, useWallet} from '@solana/wallet-adapter-react'
-import {Cluster, Keypair, PublicKey} from '@solana/web3.js'
+import {Connection, Cluster, clusterApiUrl, Keypair, PublicKey, Transaction} from '@solana/web3.js'
 import {useMutation, useQuery} from '@tanstack/react-query'
 import {useMemo} from 'react'
 import { toast } from 'sonner'
 import {useCluster} from '../cluster/cluster-data-access'
 import {useAnchorProvider} from '../solana/solana-provider'
 import {useTransactionToast} from '../ui/ui-layout'
-import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { TOKEN_PROGRAM_ID, mintTo, createMintToInstruction } from '@solana/spl-token'
 import { BN } from "@coral-xyz/anchor"
 
 interface CreateVestingArgs {
@@ -58,13 +58,51 @@ export function useVestingProgram() {
   // create vesting account TXN
   const createVestingAccountMutation = useMutation({
     mutationKey: ["vestingAccount", "create", { cluster }],
-    mutationFn: ({ company_name, mint }: CreateVestingArgs) => program.methods.createVestingAccount(company_name)
-    .accounts({ 
-      signer: wallet.publicKey!,
-      mint: new PublicKey(mint),
-      tokenProgram: TOKEN_PROGRAM_ID
-     })
-     .rpc({commitment: "confirmed"}),
+    mutationFn: async({ company_name, mint }: CreateVestingArgs) => {
+
+      const c = cluster ?? "devnet";
+      const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+      const { blockhash } = await connection.getLatestBlockhash();
+
+      const createVestingAccIxn = await program.methods.createVestingAccount(company_name)
+      .accounts({ 
+        signer: wallet.publicKey!,
+        mint: new PublicKey(mint),
+        tokenProgram: TOKEN_PROGRAM_ID
+       })
+       .instruction();
+
+      let [treasuryTokenAccount] = PublicKey.findProgramAddressSync(
+        [Buffer.from("vesting treasury"), Buffer.from(company_name)],
+        program.programId
+      );
+      const amount = 10_000 * 10 ** 9;
+      const mintTokensIxn = createMintToInstruction(
+        new PublicKey(mint),
+        treasuryTokenAccount,
+        wallet.publicKey!,
+        amount,
+        [],
+        TOKEN_PROGRAM_ID,
+      )
+
+      const transaction = new Transaction();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = wallet.publicKey!;
+
+      transaction.add(createVestingAccIxn);
+      transaction.add(mintTokensIxn);
+
+      const tx = await wallet.signTransaction!(transaction)!
+      const signature = await connection.sendRawTransaction(tx.serialize());
+      await connection.confirmTransaction({
+        signature,
+        blockhash,
+        lastValidBlockHeight: await connection.getBlockHeight()
+      });
+
+      return signature
+    },
     onSuccess: (tx) => {
       transactionToast(tx)
       return vestingAccounts.refetch()
@@ -119,11 +157,16 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
 
   const claimTokensMutation = useMutation({
     mutationKey: ['vesting', 'claim_tokens'],
-    mutationFn: () => program.methods.claimTokens()
+    mutationFn: async () => {
+      const employeeVestingAccount = await program.account.employeeVestingAccount.fetch(account); //fetching employee vesting account FROM company vesting account
+      const vestingAccount = await program.account.vestingAccount.fetch(employeeVestingAccount.vestingAccount); // fetching relevant vesting account for the given employee account
+
+      return program.methods.claimTokens(vestingAccount.companyName)
     .accounts({ 
       tokenProgram: TOKEN_PROGRAM_ID
      })
-     .rpc({commitment: "confirmed"}),
+     .rpc({commitment: "confirmed"});
+    },
     onSuccess: (tx) => {
       transactionToast(tx)
       return tx

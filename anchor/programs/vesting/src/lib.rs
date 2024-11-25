@@ -5,9 +5,6 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 use anchor_spl::token_interface;
 
-pub mod state;
-pub mod contexts;
-
 declare_id!("H9koFdC9FyMzhQLj9roL8yUpnwiAMdmm8aYPg2zrULJ8");
 
 #[program]
@@ -64,7 +61,7 @@ pub mod vesting {
       Ok(())
     }
 
-    pub fn claim_tokens(ctx: Context<ClaimTokens>) -> Result<()> {
+    pub fn claim_tokens(ctx: Context<ClaimTokens>, _company_name: String) -> Result<()> {
       //1. ALLOW GIVEN EMPLOYEE TO UNLOCK THE TOKENS + CLAIM ALL (UNLOCKED) VESTED TOKENS.
       // EMPLOYER TA -> TREASURY TOKEN ACCOUNT
       // LET IT REMAIN FOR CLIFF PERIOD, ON CLIFF ENDING TRANSFER FROM TREASURY TA -> EMPLOYEE TA
