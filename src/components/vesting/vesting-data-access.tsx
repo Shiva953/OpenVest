@@ -6,6 +6,7 @@ import {Connection, Cluster, clusterApiUrl, Keypair, PublicKey, Transaction} fro
 import {useMutation, useQuery} from '@tanstack/react-query'
 import {useMemo} from 'react'
 import { toast } from 'sonner'
+import { isBlockhashExpired } from '@/app/lib/utils'
 import {useCluster} from '../cluster/cluster-data-access'
 import {useAnchorProvider} from '../solana/solana-provider'
 import {useTransactionToast} from '../ui/ui-layout'
@@ -62,7 +63,7 @@ export function useVestingProgram() {
 
       const c = cluster ?? "devnet";
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-      const { blockhash } = await connection.getLatestBlockhash();
+      // const { blockhash } = await connection.getLatestBlockhash();
 
       const createVestingAccIxn = await program.methods.createVestingAccount(company_name)
       .accounts({ 
@@ -86,20 +87,65 @@ export function useVestingProgram() {
         TOKEN_PROGRAM_ID,
       )
 
-      const transaction = new Transaction();
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = wallet.publicKey!;
+      const tx = new Transaction();
+      
+      // transaction.recentBlockhash = blockhash;
+      // transaction.feePayer = wallet.publicKey!;
 
-      transaction.add(createVestingAccIxn);
-      transaction.add(mintTokensIxn);
+      tx.add(createVestingAccIxn);
+      tx.add(mintTokensIxn);
 
-      const tx = await wallet.signTransaction!(transaction)!
-      const signature = await connection.sendRawTransaction(tx.serialize());
-      await connection.confirmTransaction({
-        signature,
-        blockhash,
-        lastValidBlockHeight: await connection.getBlockHeight()
-      });
+      // const tx = await wallet.signTransaction!(transaction)!
+
+      const {
+        context: { slot: minContextSlot },
+        value: { blockhash, lastValidBlockHeight },
+      } = await connection.getLatestBlockhashAndContext();
+
+      const signature = await wallet.sendTransaction(tx, connection, {minContextSlot});
+      // await connection.confirmTransaction({
+      //   signature,
+      //   blockhash,
+      //   lastValidBlockHeight: await connection.getBlockHeight()
+      // });
+      try {
+        await connection.confirmTransaction(
+          { blockhash, lastValidBlockHeight, signature },
+          "confirmed"
+        );
+
+        console.log("Confirming transaction...");
+
+        // continuous checking
+        let hashExpired = false;
+          let txSuccess = false;
+          while (!hashExpired && !txSuccess) {
+              const { value: status } = await connection.getSignatureStatus(signature);
+              if (status && ((status.confirmationStatus === 'confirmed' || status.confirmationStatus === 'finalized'))) {
+                  txSuccess = true;
+                  console.log("Vesting Account Creation Transaction confirmed");
+                  toast('Transaction Confirmed', {
+                    action: {
+                      label: 'View on Solscan',
+                      onClick: () => {window.open(`https://solana.fm/tx/${signature}?cluster=devnet-solana`)},
+                    },
+                  })
+                  break;
+              }
+              hashExpired = await isBlockhashExpired(connection, lastValidBlockHeight);
+              if (hashExpired) {
+                  break;
+              }
+              const sleep = (ms: number) => {
+                return new Promise(resolve => setTimeout(resolve, ms));
+              }
+              // Check again after 2.5 sec
+              await sleep(2500);
+            }
+      } catch(err){
+        console.error(err);
+        console.log("Unable to create vesting account")
+      }
 
       return signature
     },
