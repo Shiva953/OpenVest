@@ -9,7 +9,6 @@ import { ExplorerLink } from '../cluster/cluster-ui'
 import { useVestingProgram } from './vesting-data-access'
 import { VestingCreate, VestingList } from './vesting-ui'
 import { AllocationList } from './employee-allocations-list'
-// import { AllocationList } from './vesting-card'
 
 export default function VestingFeature() {
   const { publicKey } = useWallet()
@@ -17,7 +16,7 @@ export default function VestingFeature() {
   const [activeTab, setActiveTab] = useState('vesting')
 
   return publicKey ? (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full"> {/* Added w-full here */}
       <AppHero
         title="Token Vesting"
         subtitle={'Reward Employees using Vested Tokens'}
@@ -27,9 +26,8 @@ export default function VestingFeature() {
         </p>
         <VestingCreate />
       </AppHero>
-      {/* <VestingList />
-      <AllocationList/> */}
-      <div className="mx-auto w-full">
+
+      <div className="w-full px-4 md:px-6 lg:px-8"> {/* Full width container with responsive padding */}
         {/* Tab Navigation */}
         <div className="flex gap-2 mb-4">
           <TabButton 

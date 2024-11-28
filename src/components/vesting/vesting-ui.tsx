@@ -103,7 +103,7 @@ export function VestingList() {
 
   return (
     <div className="px-4 -mt-4">
-      <div className="max-w-7xl mx-auto bg-gray-50 rounded-xl shadow-sm p-4">
+      <div className="max-w-7xl mx-auto rounded-xl shadow-sm p-4">
         {vestingAccounts.isLoading ? (
           <div className="flex justify-center items-center h-24">
             <span className="loading loading-spinner loading-lg" />

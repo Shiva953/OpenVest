@@ -1,8 +1,10 @@
 import './globals.css'
-import {ClusterProvider} from '@/components/cluster/cluster-data-access'
-import {SolanaProvider} from '@/components/solana/solana-provider'
-import {UiLayout} from '@/components/ui/ui-layout'
-import {ReactQueryProvider} from './react-query-provider'
+import { ClusterProvider } from '@/components/cluster/cluster-data-access'
+import { SolanaProvider } from '@/components/solana/solana-provider'
+import { UiLayout } from '@/components/ui/ui-layout'
+import { ReactQueryProvider } from './react-query-provider'
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 
 export const metadata = {
   title: 'vesting',
@@ -17,7 +19,7 @@ const links: { label: string; path: string }[] = [
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={GeistSans.className}>
       <body>
         <ReactQueryProvider>
           <ClusterProvider>

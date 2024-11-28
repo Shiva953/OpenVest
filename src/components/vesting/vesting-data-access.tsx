@@ -47,7 +47,7 @@ export function useVestingProgram() {
   // fetching all the vesting accounts associated with the program account
   const vestingAccounts = useQuery({
     queryKey: ["vesting", "all", { cluster }],
-    queryFn: () => program.account.vestingAccount.all(),
+    queryFn: () => program.account.vestingAccount.all().then((accounts) => accounts.filter((acc) => acc.account.owner.toString() == wallet?.publicKey!.toString())),
   })
 
   // fetching all the employee vesting accounts associated with the program + a vesting account above
@@ -63,7 +63,6 @@ export function useVestingProgram() {
 
       const c = cluster ?? "devnet";
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-      // const { blockhash } = await connection.getLatestBlockhash();
 
       const createVestingAccIxn = await program.methods.createVestingAccount(company_name)
       .accounts({ 
@@ -103,11 +102,6 @@ export function useVestingProgram() {
       } = await connection.getLatestBlockhashAndContext();
 
       const signature = await wallet.sendTransaction(tx, connection, {minContextSlot});
-      // await connection.confirmTransaction({
-      //   signature,
-      //   blockhash,
-      //   lastValidBlockHeight: await connection.getBlockHeight()
-      // });
       try {
         await connection.confirmTransaction(
           { blockhash, lastValidBlockHeight, signature },
@@ -116,7 +110,7 @@ export function useVestingProgram() {
 
         console.log("Confirming transaction...");
 
-        // continuous checking
+        // continuous checking for txn confirmation
         let hashExpired = false;
           let txSuccess = false;
           while (!hashExpired && !txSuccess) {
@@ -126,7 +120,7 @@ export function useVestingProgram() {
                   console.log("Vesting Account Creation Transaction confirmed");
                   toast('Transaction Confirmed', {
                     action: {
-                      label: 'View on Solscan',
+                      label: 'View on SolanaFM',
                       onClick: () => {window.open(`https://solana.fm/tx/${signature}?cluster=devnet-solana`)},
                     },
                   })
