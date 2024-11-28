@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { PublicKey } from '@solana/web3.js'
-import { format } from "date-fns"
+import { format, getTime } from "date-fns"
 import { BN } from "@coral-xyz/anchor"
 import { ExternalLink } from 'lucide-react'
 
@@ -106,7 +106,8 @@ export function AllocationCard({account} : { account: string }){
     const formatDate = (timestamp: BN | "0") => {
       if (!timestamp || timestamp === "0") return "Not set";
       const date = new Date(timestamp.toNumber() * 1000);
-      return format(date, 'MMM dd, yyyy');
+      const time = getTime(date);
+      return format(date, 'MMM dd, yyyy h:mmaa');
     };
 
     const compressPublicKey = (key: string) => {

@@ -1,24 +1,30 @@
 'use client'
 
 import { PublicKey } from "@solana/web3.js";
-import { useVestingProgram, useVestingProgramAccount } from "./vesting-data-access"
+import { useVestingProgramAccount } from "./vesting-data-access"
 import { Card, CardTitle, CardHeader, CardContent, CardFooter } from "../ui/card";
 import { BN } from "@coral-xyz/anchor"
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { useState, useEffect, useMemo } from "react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { format } from "date-fns";
+import { format, parse, setHours, setMinutes, getTime } from 'date-fns'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar"
+import { TimePicker } from "react-time-picker";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-import "react-datepicker/dist/react-datepicker.css";
+import {TimeInput} from "@nextui-org/date-input";
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import { TimePicker } from "@mui/x-date-pickers"
+
+// import 'react-time-picker/dist/TimePicker.css';
+// import 'react-clock/dist/Clock.css';
+// import "react-datepicker/dist/react-datepicker.css";
 
 interface CreateEmployeeArgs {
     startTime: number;
@@ -32,13 +38,35 @@ interface CreateEmployeeArgs {
     return Math.floor(date.getTime() / 1000);
   };
 
+  const getUnixTimestamp = (startDate: Date, startTiming: string) => {
+    if (!startDate || !startTiming) return 0;
+    // Parse the time string (HH:mm)
+    const [hours, minutes] = startTiming.split(':').map(Number);
+    // Create a date object with the selected date and time
+    const combinedDateTime = setMinutes(
+      setHours(startDate, hours), 
+      minutes
+    );
+    // Convert to Unix timestamp (seconds)
+    return Math.floor(getTime(combinedDateTime) / 1000);
+  };
+
+  const cliffPeriodToCliffTime = (startTime: number, cliffPeriod: number) => {
+    return startTime + cliffPeriodInMinutesToUnixSeconds(cliffPeriod);
+  }
+
+  const cliffPeriodInMinutesToUnixSeconds = (cliffPeriod: number) => {
+    return cliffPeriod * 60;
+  }
+
 export default function VestingCard({ account }: { account: string }){
     const { getVestingAccountStateQuery, createEmployeeAccountMutation } = useVestingProgramAccount({account: new PublicKey(account)})
     const [startDate, setStartDate] = useState<Date>();
+    const [startTiming, setStartTiming] = useState('12:00');
     const [endDate, setEndDate] = useState<Date>();
+    const [endTiming, setEndTiming] = useState('12:59');
     const [cliffTime, setCliffTime] = useState(400);
     const [totalAmount, setTotalAmount] = useState(100000);
-    const [showAllocationList, setShowAllocationList] = useState(false)
 
     const {data, isLoading, isError} = getVestingAccountStateQuery;
 
@@ -48,16 +76,8 @@ export default function VestingCard({ account }: { account: string }){
         [getVestingAccountStateQuery.data?.companyName]
       );
 
-      const startTime = useMemo(() => dateToUnixTimestamp(startDate), [startDate]);
-      const endTime = useMemo(() => dateToUnixTimestamp(endDate), [endDate]);
-
-      const cliffPeriodToCliffTime = (cliffPeriod: number) => {
-        return startTime + cliffPeriodInMinutesToUnixSeconds(cliffPeriod);
-      }
-
-      const cliffPeriodInMinutesToUnixSeconds = (cliffPeriod: number) => {
-        return cliffPeriod * 60;
-      }
+      const startTime = useMemo(() => getUnixTimestamp(startDate!, startTiming), [startDate, startTiming]);
+      const endTime = useMemo(() => getUnixTimestamp(endDate!, endTiming), [endDate]);
 
 
     if(isLoading){
@@ -83,7 +103,7 @@ export default function VestingCard({ account }: { account: string }){
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label className="text-sm font-medium">Start Time</Label>
+              <Label className="text-sm font-medium">Start Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -112,6 +132,40 @@ export default function VestingCard({ account }: { account: string }){
               </Popover>
             </div>
             <div className="space-y-1">
+            {/* <Popover>
+            <PopoverTrigger asChild> */}
+            {/* <Button
+              variant="outline"
+              className={cn(
+                "w-full pl-3 text-left font-normal",
+                !startTiming && "text-muted-foreground"
+              )}
+              >
+                {startTime ? (
+                      startTime
+                    ) : (
+                      <span>Pick a start time</span>
+                    )}
+            </Button> */}
+            {/* </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start"> */}
+            <TimeInput
+                onChange={(val) => setStartTiming(val.toString())}
+                variant="bordered"
+                className="w-full mx-auto mt-[1.75rem]"
+              />
+            {/* </PopoverContent>
+            </Popover> */}
+              {/* <TimePicker 
+                onSelect={setStartTiming}
+                className="w-full mx-auto h-full"
+                clearIcon={null}
+              /> */}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1">
               <Label className="text-sm font-medium">End Time</Label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -141,13 +195,21 @@ export default function VestingCard({ account }: { account: string }){
                 </PopoverContent>
               </Popover>
             </div>
+            <div className="space-y-1">
+            <TimeInput
+                onChange={(val) => setEndTiming(val.toString())}
+                variant="bordered"
+                className="w-full mx-auto mt-[1.75rem]"
+              />
+            </div>
           </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label className="text-sm font-medium">Cliff Period</Label>
               <Input 
                 type="number" 
-                onChange={(e) => setCliffTime(cliffPeriodToCliffTime(Number(e.target.value || "0")))}
+                onChange={(e) => setCliffTime(cliffPeriodToCliffTime(startTime, Number(e.target.value || "0")))}
                 className="w-full"
               />
             </div>
