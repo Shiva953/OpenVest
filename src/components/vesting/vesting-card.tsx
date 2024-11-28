@@ -1,6 +1,6 @@
 'use client'
 
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Connection } from "@solana/web3.js";
 import { useVestingProgramAccount } from "./vesting-data-access"
 import { Card, CardTitle, CardHeader, CardContent, CardFooter } from "../ui/card";
 import { BN } from "@coral-xyz/anchor"
@@ -19,6 +19,10 @@ import { TimePicker } from "react-time-picker";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import {TimeInput} from "@nextui-org/date-input";
+import { getDecimalsAndSupplyToken } from "@/app/lib/getTokenDecimals";
+import { useConnection } from "@solana/wallet-adapter-react";
+import { useQuery } from "@tanstack/react-query";
+import useTokenDecimals from "../hooks/useTokenDecimals";
 // import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 // import { TimePicker } from "@mui/x-date-pickers"
 
@@ -60,6 +64,7 @@ interface CreateEmployeeArgs {
   }
 
 export default function VestingCard({ account }: { account: string }){
+    const { connection } = useConnection()
     const { getVestingAccountStateQuery, createEmployeeAccountMutation } = useVestingProgramAccount({account: new PublicKey(account)})
     const [startDate, setStartDate] = useState<Date>();
     const [startTiming, setStartTiming] = useState('12:00');
@@ -74,10 +79,17 @@ export default function VestingCard({ account }: { account: string }){
     const companyName = useMemo(
         () => getVestingAccountStateQuery.data?.companyName ?? "0",
         [getVestingAccountStateQuery.data?.companyName]
-      );
+    );
+
+    const tokenMint = useMemo(
+      () => getVestingAccountStateQuery.data?.mint,
+      [getVestingAccountStateQuery.data?.mint]
+    );
+
+    let tokenDecimals = useTokenDecimals(tokenMint?.toString()!);
 
       const startTime = useMemo(() => getUnixTimestamp(startDate!, startTiming), [startDate, startTiming]);
-      const endTime = useMemo(() => getUnixTimestamp(endDate!, endTiming), [endDate]);
+      const endTime = useMemo(() => getUnixTimestamp(endDate!, endTiming), [endDate, endTiming]);
 
 
     if(isLoading){
@@ -132,35 +144,11 @@ export default function VestingCard({ account }: { account: string }){
               </Popover>
             </div>
             <div className="space-y-1">
-            {/* <Popover>
-            <PopoverTrigger asChild> */}
-            {/* <Button
-              variant="outline"
-              className={cn(
-                "w-full pl-3 text-left font-normal",
-                !startTiming && "text-muted-foreground"
-              )}
-              >
-                {startTime ? (
-                      startTime
-                    ) : (
-                      <span>Pick a start time</span>
-                    )}
-            </Button> */}
-            {/* </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start"> */}
             <TimeInput
                 onChange={(val) => setStartTiming(val.toString())}
                 variant="bordered"
                 className="w-full mx-auto mt-[1.75rem]"
               />
-            {/* </PopoverContent>
-            </Popover> */}
-              {/* <TimePicker 
-                onSelect={setStartTiming}
-                className="w-full mx-auto h-full"
-                clearIcon={null}
-              /> */}
             </div>
           </div>
 
@@ -227,7 +215,7 @@ export default function VestingCard({ account }: { account: string }){
             onClick={() => createEmployeeAccountMutation.mutateAsync({
               start_time: startTime,
               end_time: endTime,
-              total_allocation_amount: totalAmount,
+              total_allocation_amount: totalAmount * 10**(tokenDecimals),
               cliff: cliffTime,
             })}
             disabled={createEmployeeAccountMutation.isPending || !startDate || !endDate}

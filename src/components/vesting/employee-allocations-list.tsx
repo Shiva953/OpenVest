@@ -6,6 +6,17 @@ import { PublicKey } from '@solana/web3.js'
 import { format, getTime } from "date-fns"
 import { BN } from "@coral-xyz/anchor"
 import { ExternalLink } from 'lucide-react'
+import useTokenDecimals from '../hooks/useTokenDecimals';
+
+const formatDate = (timestamp: BN | "0") => {
+  if (!timestamp || timestamp === "0") return "Not set";
+  const date = new Date(timestamp.toNumber() * 1000);
+  return format(date, 'MMM dd, yyyy h:mmaa');
+};
+
+const compressPublicKey = (key: string) => {
+  return `${key.slice(0, 4)}…${key.slice(-4)}`;
+};
 
 export function AllocationList(){
     const { program, getProgramAccount, employeeAccounts } = useVestingProgram();
@@ -78,7 +89,7 @@ export function AllocationCard({account} : { account: string }){
     );
   
     const total_allocation_amount = useMemo(
-      () => getEmployeeVestingAccountStateQuery.data?.tokenAllocationAmount ?? "0",
+      () => getEmployeeVestingAccountStateQuery.data?.tokenAllocationAmount ?? new BN(0),
       [getEmployeeVestingAccountStateQuery.data?.tokenAllocationAmount]
     );
   
@@ -89,7 +100,7 @@ export function AllocationCard({account} : { account: string }){
     const cliff_period_in_mins = ((cliff_time.sub(startTime)).toNumber())/60;
 
     const withdrawn_amount = useMemo(
-      () => getEmployeeVestingAccountStateQuery.data?.withdrawnAmount ?? "0",
+      () => getEmployeeVestingAccountStateQuery.data?.withdrawnAmount ?? new BN(0),
       [getEmployeeVestingAccountStateQuery.data?.withdrawnAmount]
     );
 
@@ -102,19 +113,13 @@ export function AllocationCard({account} : { account: string }){
      const company_name = useMemo(
       () => getVestingAccountStateQuery.data?.companyName ?? "Unknown Company",
       [getVestingAccountStateQuery.data?.companyName])
-  
-    const formatDate = (timestamp: BN | "0") => {
-      if (!timestamp || timestamp === "0") return "Not set";
-      const date = new Date(timestamp.toNumber() * 1000);
-      const time = getTime(date);
-      return format(date, 'MMM dd, yyyy h:mmaa');
-    };
 
-    const compressPublicKey = (key: string) => {
-      return `${key.slice(0, 4)}…${key.slice(-4)}`;
-    };
+      const decimals = useTokenDecimals(tokenMint.toString())
 
-    // Calculate progress percentage
+      const actualTotalAllocationAmount = Math.floor(total_allocation_amount?.toNumber() /(10**decimals));
+      const actualWithdrawnAmount = Math.floor(withdrawn_amount?.toNumber() /(10**decimals));
+
+    // withdrawn amount progress bar
     const progressPercentage = useMemo(() => {
       const totalAllocation = parseFloat(total_allocation_amount.toString());
       const withdrawn = parseFloat(withdrawn_amount.toString());
@@ -123,8 +128,6 @@ export function AllocationCard({account} : { account: string }){
         : 0;
     }, [total_allocation_amount, withdrawn_amount]);
 
-    console.log(Date.now()/1000)
-    console.log(endTime.toString())
     const isClaimExpired = (Date.now()/1000) > endTime.toNumber();
   
     return (
@@ -149,7 +152,7 @@ export function AllocationCard({account} : { account: string }){
             <div className="space-y-1">
               <h4 className="text-sm text-gray-500 tracking-tighter">Total Tokens</h4>
               <p className="text-md text-gray-800 font-semibold">
-                {total_allocation_amount.toLocaleString()}
+                {actualTotalAllocationAmount.toLocaleString()}
               </p>
             </div>
             <div className="space-y-1 text-right">
@@ -189,7 +192,7 @@ export function AllocationCard({account} : { account: string }){
           <div className="space-y-4 mt-4">
             <div className="flex justify-between text-sm text-gray-600 mt-8">
               <span className='mb--24 tracking-tight'>Withdrawn Tokens</span>
-              <span className='font-bold'>{withdrawn_amount.toLocaleString()} / {total_allocation_amount.toLocaleString()}</span>
+              <span className='font-bold'>{actualWithdrawnAmount.toLocaleString()} / {actualTotalAllocationAmount.toLocaleString()}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div 
