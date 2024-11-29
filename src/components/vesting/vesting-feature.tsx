@@ -19,11 +19,11 @@ export default function VestingFeature() {
     <div className="flex flex-col w-full"> {/* Added w-full here */}
       <AppHero
         title="Token Vesting"
-        subtitle={'Reward Employees using Vested Tokens'}
+        subtitle={'Reward your project contributors with vested tokens!'}
       >
-        <p className="mb-2">
+        {/* <p className="mb-2">
           <ExplorerLink path={`account/${programId}`} label={ellipsify(programId.toString())} />
-        </p>
+        </p> */}
         <VestingCreate />
       </AppHero>
 
@@ -45,7 +45,7 @@ export default function VestingFeature() {
         </div>
 
         {/* Tab Content */}
-        <div className="w-full bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="w-full p-6 rounded-lg shadow-sm border border-indigo-500 border-opacity-20">
           {activeTab === 'vesting' ? (
             <VestingList />
           ) : (

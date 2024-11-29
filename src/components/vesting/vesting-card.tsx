@@ -15,20 +15,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar"
-import { TimePicker } from "react-time-picker";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-import {TimeInput} from "@nextui-org/date-input";
-import { getDecimalsAndSupplyToken } from "@/app/lib/getTokenDecimals";
+import { TimeInput } from "@nextui-org/date-input";
 import { useConnection } from "@solana/wallet-adapter-react";
-import { useQuery } from "@tanstack/react-query";
 import useTokenDecimals from "../hooks/useTokenDecimals";
-// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-// import { TimePicker } from "@mui/x-date-pickers"
-
-// import 'react-time-picker/dist/TimePicker.css';
-// import 'react-clock/dist/Clock.css';
-// import "react-datepicker/dist/react-datepicker.css";
 
 interface CreateEmployeeArgs {
     startTime: number;
@@ -108,14 +99,14 @@ export default function VestingCard({ account }: { account: string }){
 
     return (
       <>
-      <Card className="bg-white">
+      <Card className="bg-black">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-semibold">{companyName}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label className="text-sm font-medium">Start Date</Label>
+              <Label className="text-sm font-medium">Start Time</Label>
               <Popover>
                 <PopoverTrigger asChild>
                 <Button
@@ -232,7 +223,7 @@ export default function VestingCard({ account }: { account: string }){
               <Input 
                 type="number" 
                 onChange={(e) => setCliffTime(cliffPeriodToCliffTime(startTime, Number(e.target.value || "0")))}
-                className="w-full"
+                className="w-full bg-transparent"
               />
             </div>
             <div className="space-y-1">
@@ -240,12 +231,12 @@ export default function VestingCard({ account }: { account: string }){
               <Input 
                 type="number" 
                 onChange={(e) => setTotalAmount(Number(e.target.value))}
-                className="w-full"
+                className="w-full bg-transparent"
               />
             </div>
           </div>
           <Button 
-            className="w-full bg-black transition-colors mt-2"
+            className="w-full bg-white text-black transition-colors mt-2"
             onClick={() => createEmployeeAccountMutation.mutateAsync({
               start_time: startTime,
               end_time: endTime,

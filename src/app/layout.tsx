@@ -1,10 +1,10 @@
 import './globals.css'
 import { ClusterProvider } from '@/components/cluster/cluster-data-access'
 import { SolanaProvider } from '@/components/solana/solana-provider'
+import { Toaster, toast } from 'sonner'
 import { UiLayout } from '@/components/ui/ui-layout'
 import { ReactQueryProvider } from './react-query-provider'
 import { NextUIProvider } from "@nextui-org/react";
-import { LocalizationProvider } from '@mui/x-date-pickers';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 
@@ -21,7 +21,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={GeistSans.className}>
+    <html lang="en" className={`dark ${GeistSans.className}`}>
       <body>
         <ReactQueryProvider>
           <ClusterProvider>
@@ -29,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {/* <UiLayout links={links}> */}
               <NextUIProvider>
                 {children}
+                <Toaster position="bottom-right" />
               </NextUIProvider>
                 {/* </UiLayout> */}
             </SolanaProvider>

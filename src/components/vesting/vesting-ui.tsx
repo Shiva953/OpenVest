@@ -31,7 +31,7 @@ export function VestingCreate() {
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                className="bg-black"
+                className="bg-white text-black"
               >
                 Create New Vesting Account
               </Button>

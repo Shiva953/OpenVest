@@ -1,5 +1,5 @@
 import type {Config} from "tailwindcss";
-const {nextui} = require("@nextui-org/theme");
+const { nextui } = require("@nextui-org/theme");
 
 const config: Config = {
     darkMode: ["class"],

@@ -9,6 +9,7 @@ import { ExternalLink } from 'lucide-react'
 import useTokenDecimals from '../hooks/useTokenDecimals';
 
 // revamp UI, polish it, add new features(choosing mins/hrs/days in cliff, adding custom beneficiary while creating employee account)
+// move the program ixn calls to backend routes
 
 const formatDate = (timestamp: BN | "0") => {
   if (!timestamp || timestamp === "0") return "Not set";
@@ -133,18 +134,18 @@ export function AllocationCard({account} : { account: string }){
     const isClaimExpired = (Date.now()/1000) > endTime.toNumber();
   
     return (
-      <Card className="bg-white w-full mx-auto">
+      <Card className="w-full mx-auto">
         <CardContent className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4 space-x-4">
             <div className="space-y-1">
               <h4 className="text-sm text-gray-500 tracking-tighter">Start Date</h4>
-              <p className="text-md text-gray-800 font-semibold">
+              <p className="text-md text-white font-semibold">
                 {formatDate(startTime)}
               </p>
             </div>
             <div className="space-y-1 text-right">
               <h4 className="text-sm text-gray-500 tracking-tighter">End Date</h4>
-              <p className="text-md text-gray-800 font-semibold">
+              <p className="text-md text-white font-semibold">
                 {formatDate(endTime)}
               </p>
             </div>
@@ -153,13 +154,13 @@ export function AllocationCard({account} : { account: string }){
           <div className="grid grid-cols-2 gap-4 space-x-4">
             <div className="space-y-1">
               <h4 className="text-sm text-gray-500 tracking-tighter">Total Tokens</h4>
-              <p className="text-md text-gray-800 font-semibold">
+              <p className="text-md text-white font-semibold">
                 {actualTotalAllocationAmount.toLocaleString()}
               </p>
             </div>
             <div className="space-y-1 text-right">
               <h4 className="text-sm text-gray-500 tracking-tighter">Cliff Period(Mins)</h4>
-              <p className="text-md text-gray-800 font-semibold">
+              <p className="text-md text-white font-semibold">
                 {cliff_period_in_mins.toFixed(2).toString()}
               </p>
             </div>
@@ -168,14 +169,14 @@ export function AllocationCard({account} : { account: string }){
           <div className="grid grid-cols-2 gap-4 space-x-4">
             <div className="space-y-1">
               <h4 className="text-sm text-gray-500 tracking-tighter">Company</h4>
-              <p className="text-md text-gray-800 font-semibold">
+              <p className="text-md text-white font-semibold">
                 {company_name}
               </p>
             </div>
             <div className="space-y-1 text-right">
               <h4 className="text-sm text-gray-500 tracking-tighter">Token Mint</h4>
               <div className="flex items-center justify-end space-x-2">
-                <p className="text-md text-gray-800 font-semibold">
+                <p className="text-md text-white font-semibold">
                   {compressPublicKey(token_mint)}
                 </p>
                 <a 
@@ -193,10 +194,10 @@ export function AllocationCard({account} : { account: string }){
           {/* Withdrawn Tokens Progress Bar */}
           <div className="space-y-4 mt-4">
             <div className="flex justify-between text-sm text-gray-600 mt-8">
-              <span className='mb--24 tracking-tight'>Withdrawn Tokens</span>
-              <span className='font-bold'>{actualWithdrawnAmount.toLocaleString()} / {actualTotalAllocationAmount.toLocaleString()}</span>
+              <span className='mb--24 tracking-tight text-gray-300'>Withdrawn Tokens</span>
+              <span className='text-white font-bold'>{actualWithdrawnAmount.toLocaleString()} / {actualTotalAllocationAmount.toLocaleString()}</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="w-full bg-gray-300 rounded-full h-2.5">
               <div 
                 className="bg-green-500 h-2.5 rounded-full" 
                 style={{ width: `${progressPercentage}%` }}
@@ -209,7 +210,7 @@ export function AllocationCard({account} : { account: string }){
         <CardFooter className="flex justify-center pb-6">
           {!isClaimExpired ? (
             <Button 
-            className="bg-black text-white px-8 py-2 rounded-lg transition-colors duration-300"
+            className="bg-white text-black px-8 py-2 rounded-lg transition-colors duration-300"
             onClick={() => claimTokensMutation.mutateAsync()}
             disabled={claimTokensMutation.isPending}
           >
@@ -217,7 +218,7 @@ export function AllocationCard({account} : { account: string }){
           </Button>
           ) : (
             <Button 
-            className="bg-black text-white px-8 py-2 rounded-lg transition-colors duration-300"
+            className="bg-gray-800 text-white px-8 py-2 rounded-lg transition-colors duration-300"
             disabled={true}
             >
             Claim Expired
