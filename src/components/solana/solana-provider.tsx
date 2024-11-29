@@ -30,7 +30,10 @@ export function SolanaProvider({ children }: { children: ReactNode }) {
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={[]} onError={onError} autoConnect={true}>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        <WalletModalProvider>
+          <WalletButton className='mt-4 ml-4'/>
+          {children}
+          </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   )

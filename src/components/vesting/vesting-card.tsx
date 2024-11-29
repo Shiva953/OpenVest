@@ -118,20 +118,30 @@ export default function VestingCard({ account }: { account: string }){
               <Label className="text-sm font-medium">Start Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full pl-3 text-left font-normal",
-                      !startDate && "text-muted-foreground"
-                    )}
-                  >
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full pl-3 text-left font-normal",
+                    !endDate && "text-muted-foreground",
+                    "flex items-center justify-between" // Ensure proper alignment
+                  )}
+                >
+                  <span className="truncate max-w-full">
                     {startDate ? (
-                      format(startDate, "PPP")
+                      <>
+                        <span className="hidden sm:inline">
+                          {format(startDate, "PPP")} {/* Full format for larger screens */}
+                        </span>
+                        <span className="sm:hidden">
+                          {format(startDate, "MMM dd")} {/* Shortened format for small screens */}
+                        </span>
+                      </>
                     ) : (
-                      <span>Pick a start date</span>
+                      <span>Pick start</span>
                     )}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
+                  </span>
+                  <CalendarIcon className="ml-2 h-4 w-4 opacity-50 flex-shrink-0" />
+                </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
@@ -157,20 +167,44 @@ export default function VestingCard({ account }: { account: string }){
               <Label className="text-sm font-medium">End Time</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button
+                  {/* <Button
                     variant="outline"
                     className={cn(
                       "w-full pl-3 text-left font-normal",
-                      !endDate && "text-muted-foreground"
+                      !endDate && "text-muted-foreground",
                     )}
                   >
                     {endDate ? (
                       format(endDate, "PPP")
                     ) : (
-                      <span>Pick an end date</span>
+                      <span>Pick end</span>
                     )}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button>
+                  </Button> */}
+                  <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full pl-3 text-left font-normal",
+                    !endDate && "text-muted-foreground",
+                    "flex items-center justify-between" // Ensure proper alignment
+                  )}
+                >
+                  <span className="truncate max-w-full">
+                    {endDate ? (
+                      <>
+                        <span className="hidden sm:inline">
+                          {format(endDate, "PPP")} {/* Full format for larger screens */}
+                        </span>
+                        <span className="sm:hidden">
+                          {format(endDate, "MMM dd")} {/* Shortened format for small screens */}
+                        </span>
+                      </>
+                    ) : (
+                      <span>Pick end</span>
+                    )}
+                  </span>
+                  <CalendarIcon className="ml-2 h-4 w-4 opacity-50 flex-shrink-0" />
+                </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
@@ -215,7 +249,7 @@ export default function VestingCard({ account }: { account: string }){
             onClick={() => createEmployeeAccountMutation.mutateAsync({
               start_time: startTime,
               end_time: endTime,
-              total_allocation_amount: totalAmount * 10**(tokenDecimals),
+              total_allocation_amount: totalAmount * (10**(tokenDecimals)),
               cliff: cliffTime,
             })}
             disabled={createEmployeeAccountMutation.isPending || !startDate || !endDate}

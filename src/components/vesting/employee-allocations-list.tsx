@@ -8,6 +8,8 @@ import { BN } from "@coral-xyz/anchor"
 import { ExternalLink } from 'lucide-react'
 import useTokenDecimals from '../hooks/useTokenDecimals';
 
+// revamp UI, polish it, add new features(choosing mins/hrs/days in cliff, adding custom beneficiary while creating employee account)
+
 const formatDate = (timestamp: BN | "0") => {
   if (!timestamp || timestamp === "0") return "Not set";
   const date = new Date(timestamp.toNumber() * 1000);
