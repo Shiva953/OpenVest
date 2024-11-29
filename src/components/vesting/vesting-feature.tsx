@@ -21,9 +21,6 @@ export default function VestingFeature() {
         title="Token Vesting"
         subtitle={'Reward your project contributors with vested tokens!'}
       >
-        {/* <p className="mb-2">
-          <ExplorerLink path={`account/${programId}`} label={ellipsify(programId.toString())} />
-        </p> */}
         <VestingCreate />
       </AppHero>
 
@@ -45,7 +42,7 @@ export default function VestingFeature() {
         </div>
 
         {/* Tab Content */}
-        <div className="w-full p-6 rounded-lg shadow-sm border border-indigo-500 border-opacity-20">
+        <div className="w-full p-6 rounded-lg shadow-sm border-opacity-20">
           {activeTab === 'vesting' ? (
             <VestingList />
           ) : (

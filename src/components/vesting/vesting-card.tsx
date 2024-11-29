@@ -7,8 +7,8 @@ import { BN } from "@coral-xyz/anchor"
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { useState, useEffect, useMemo } from "react";
-import { format, parse, setHours, setMinutes, getTime } from 'date-fns'
+import { useState, useMemo } from "react";
+import { format, setHours, setMinutes, getTime } from 'date-fns'
 import {
   Popover,
   PopoverContent,
@@ -99,7 +99,10 @@ export default function VestingCard({ account }: { account: string }){
 
     return (
       <>
-      <Card className="bg-black">
+      <Card className="bg-[.dark]"
+      >
+      {/* <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/50 to-purple-600/50 rounded-xl blur-sm opacity-50 group-hover:opacity-75 transition duration-300 ease-in-out z-[-1]"></div> */}
+        <div>
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-semibold">{companyName}</CardTitle>
         </CardHeader>
@@ -254,6 +257,7 @@ export default function VestingCard({ account }: { account: string }){
             Show Employee Vesting Accounts for this Company
           </Button> */}
         </CardContent>
+        </div>
       </Card>
       </>
     );

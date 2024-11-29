@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import { isBlockhashExpired } from '@/app/lib/utils'
 import {useCluster} from '../cluster/cluster-data-access'
 import {useAnchorProvider} from '../solana/solana-provider'
-import {useTransactionToast} from '../ui/ui-layout'
+import { ExternalLink } from 'lucide-react'
 import { TOKEN_PROGRAM_ID, mintTo, createMintToInstruction } from '@solana/spl-token'
 import { BN } from "@coral-xyz/anchor"
 
@@ -30,7 +30,6 @@ interface CreateEmployeeArgs {
 export function useVestingProgram() {
   const { connection } = useConnection()
   const { cluster } = useCluster()
-  const transactionToast = useTransactionToast()
 
   const provider = useAnchorProvider()
   const programId = useMemo(() => getVestingProgramId(cluster.network as Cluster), [cluster])
@@ -87,14 +86,9 @@ export function useVestingProgram() {
       )
 
       const tx = new Transaction();
-      
-      // transaction.recentBlockhash = blockhash;
-      // transaction.feePayer = wallet.publicKey!;
 
       tx.add(createVestingAccIxn);
       tx.add(mintTokensIxn);
-
-      // const tx = await wallet.signTransaction!(transaction)!
 
       const {
         context: { slot: minContextSlot },
@@ -109,6 +103,7 @@ export function useVestingProgram() {
         );
 
         console.log("Confirming transaction...");
+        toast.info("Confirming Transaction...")
 
         // continuous checking for txn confirmation
         let hashExpired = false;
@@ -118,12 +113,6 @@ export function useVestingProgram() {
               if (status && ((status.confirmationStatus === 'confirmed' || status.confirmationStatus === 'finalized'))) {
                   txSuccess = true;
                   console.log("Vesting Account Creation Transaction confirmed");
-                  toast('Transaction Confirmed', {
-                    action: {
-                      label: 'View on SolanaFM',
-                      onClick: () => {window.open(`https://solana.fm/tx/${signature}?cluster=devnet-solana`)},
-                    },
-                  })
                   break;
               }
               hashExpired = await isBlockhashExpired(connection, lastValidBlockHeight);
@@ -133,7 +122,6 @@ export function useVestingProgram() {
               const sleep = (ms: number) => {
                 return new Promise(resolve => setTimeout(resolve, ms));
               }
-              // Check again after 2.5 sec
               await sleep(2500);
             }
       } catch(err){
@@ -144,7 +132,19 @@ export function useVestingProgram() {
       return signature
     },
     onSuccess: (tx) => {
-      transactionToast(tx)
+      toast.success('Successfully Created Vesting Account', {
+        action: {
+          label: <a 
+          href={`https://explorer.solana.com/tx/${tx}?cluster=devnet`} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="text-blue-500 hover:text-blue-700"
+        >
+          <ExternalLink size={16} />
+        </a>,
+          onClick: () => window.open(`https://explorer.solana.com/tx/${tx}?cluster=devnet`)
+        }
+      })
       return vestingAccounts.refetch()
     },
     onError: () => toast.error("Failed to initialize vesting account"),
@@ -164,7 +164,6 @@ export function useVestingProgram() {
 
 export function useVestingProgramAccount({ account }: { account: PublicKey }) {
   const { cluster } = useCluster()
-  const transactionToast = useTransactionToast()
   const wallet = useWallet();
   const { program, vestingAccounts, employeeAccounts } = useVestingProgram()
 
@@ -189,7 +188,19 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
      })
      .rpc({commitment: "confirmed"}),
     onSuccess: (tx) => {
-      transactionToast(tx)
+      toast.success('Employee Account Created', {
+        action: {
+          label: <a 
+          href={`https://explorer.solana.com/tx/${tx}?cluster=devnet`} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="text-blue-500 hover:text-blue-700"
+        >
+          <ExternalLink size={16} />
+        </a>,
+          onClick: () => window.open(`https://explorer.solana.com/tx/${tx}?cluster=devnet`)
+        }
+      })
       return vestingAccounts.refetch()
     },
     onError: () => toast.error("Failed to initialize employee account"),
@@ -208,7 +219,19 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
      .rpc({commitment: "confirmed"});
     },
     onSuccess: (tx) => {
-      transactionToast(tx)
+      toast.success('Transaction Confirmed!', {
+        action: {
+          label: <a 
+          href={`https://explorer.solana.com/tx/${tx}?cluster=devnet`} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="text-blue-500 hover:text-blue-700"
+        >
+          <ExternalLink size={16} />
+        </a>,
+          onClick: () => window.open(`https://explorer.solana.com/tx/${tx}?cluster=devnet`)
+        }
+      })
       return tx
     },
   })
