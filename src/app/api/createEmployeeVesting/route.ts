@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Connection, Cluster, clusterApiUrl, PublicKey, Transaction, Keypair, Signer } from '@solana/web3.js';
-import { TOKEN_PROGRAM_ID, createMintToInstruction } from '@solana/spl-token';
+import { Connection, Cluster, clusterApiUrl, PublicKey, Transaction } from '@solana/web3.js';
 import * as anchor from "@coral-xyz/anchor";
 import { Program, AnchorProvider } from "@coral-xyz/anchor";
 import { Vesting, IDL } from "../../types/vesting";
