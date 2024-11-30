@@ -5,25 +5,12 @@ import { useState, useMemo } from 'react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog"
 import VestingCard from './vesting-card'
-import { PublicKey } from '@solana/web3.js'
-import { format } from "date-fns"
-import {BN} from "@coral-xyz/anchor"
 
 export function VestingCreate() {
   const [newCompany, setNewCompany] = useState('')
   const [newMintAddress, setNewMintAddress] = useState('');
   const {createVestingAccountMutation} = useVestingProgram();
-
-  const {data, isError} = createVestingAccountMutation;
   
   return (
     // <main className="container py-4">
@@ -90,7 +77,7 @@ export function VestingCreate() {
               id="company"
               value={newCompany}
               onChange={(e) => setNewCompany(e.target.value)}
-              className="col-span-3 rounded-full"
+              className="col-span-3 rounded-full h-[4rem] mr-4"
               placeholder="Company Name"
             />
           </div>
@@ -102,7 +89,7 @@ export function VestingCreate() {
               id="mintAddress"
               value={newMintAddress}
               onChange={(e) => setNewMintAddress(e.target.value)}
-              className="col-span-3 rounded-full"
+              className="col-span-3 rounded-full w-full h-[4rem] mr-4"
               placeholder="Token Mint Address"
             />
           </div>
@@ -125,7 +112,7 @@ export function VestingCreate() {
 }
 
 export function VestingList() {
-  const { program, getProgramAccount, vestingAccounts } = useVestingProgram();
+  const { getProgramAccount, vestingAccounts } = useVestingProgram();
 
   if (getProgramAccount.isLoading) {
     return (

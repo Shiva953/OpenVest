@@ -12,6 +12,8 @@ import {useAnchorProvider} from '../solana/solana-provider'
 import { ExternalLink } from 'lucide-react'
 import { TOKEN_PROGRAM_ID, mintTo, createMintToInstruction } from '@solana/spl-token'
 import { BN } from "@coral-xyz/anchor"
+import axios, {Axios} from "axios"
+import { headers } from 'next/headers'
 
 interface CreateVestingArgs {
   company_name: string;
@@ -85,10 +87,22 @@ export function useVestingProgram() {
         TOKEN_PROGRAM_ID,
       )
 
-      const tx = new Transaction();
+      // const tx = new Transaction();
 
-      tx.add(createVestingAccIxn);
-      tx.add(mintTokensIxn);
+      // tx.add(createVestingAccIxn);
+      // tx.add(mintTokensIxn);
+
+      // how do deserialize the serialized transaction returned from that route correctly
+      const txn_metadata = await axios.post("http://localhost:3000/api/createCompanyVesting", {
+        company_name: company_name,
+        mint: mint,
+        beneficiary: wallet.publicKey?.toString()!
+      }, {
+        headers: {'Content-Type': 'application/json'},
+      })
+      console.log(txn_metadata)
+      const tx = Transaction.from(Buffer.from(txn_metadata.data.tx, 'base64'));
+      // const tx = await wallet.signTransaction!(tx_)
 
       const {
         context: { slot: minContextSlot },
@@ -112,6 +126,19 @@ export function useVestingProgram() {
               const { value: status } = await connection.getSignatureStatus(signature);
               if (status && ((status.confirmationStatus === 'confirmed' || status.confirmationStatus === 'finalized'))) {
                   txSuccess = true;
+                  toast.success('Successfully Created Vesting Account', {
+                    action: {
+                      label: <a 
+                      href={`https://explorer.solana.com/tx/${signature}?cluster=devnet`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      <ExternalLink size={16} />
+                    </a>,
+                      onClick: () => window.open(`https://explorer.solana.com/tx/${signature}?cluster=devnet`)
+                    }
+                  })
                   console.log("Vesting Account Creation Transaction confirmed");
                   break;
               }
@@ -132,19 +159,7 @@ export function useVestingProgram() {
       return signature
     },
     onSuccess: (tx) => {
-      toast.success('Successfully Created Vesting Account', {
-        action: {
-          label: <a 
-          href={`https://explorer.solana.com/tx/${tx}?cluster=devnet`} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="text-blue-500 hover:text-blue-700"
-        >
-          <ExternalLink size={16} />
-        </a>,
-          onClick: () => window.open(`https://explorer.solana.com/tx/${tx}?cluster=devnet`)
-        }
-      })
+      console.log("Vesting Account Created Successfully!")
       return vestingAccounts.refetch()
     },
     onError: () => toast.error("Failed to initialize vesting account"),
@@ -164,6 +179,7 @@ export function useVestingProgram() {
 
 export function useVestingProgramAccount({ account }: { account: PublicKey }) {
   const { cluster } = useCluster()
+  const { connection } = useConnection();
   const wallet = useWallet();
   const { program, vestingAccounts, employeeAccounts } = useVestingProgram()
 
@@ -180,27 +196,74 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
 
   const createEmployeeAccountMutation = useMutation({
     mutationKey: ['vesting', 'create_employee_vesting_account'],
-    mutationFn: ({ start_time, end_time, total_allocation_amount, cliff }: CreateEmployeeArgs) => 
-    program.methods.createEmployeeVesting(new BN(start_time), new BN(end_time), new BN(total_allocation_amount), new BN(cliff))
-    .accounts({ 
-      beneficiary: wallet.publicKey!,
-      vestingAccount: account,
-     })
-     .rpc({commitment: "confirmed"}),
+    mutationFn: async({ start_time, end_time, total_allocation_amount, cliff }: CreateEmployeeArgs) => 
+    {
+          const metadata = await axios.post("http://localhost:3000/api/createEmployeeVesting", {
+            start_time: start_time,
+            end_time: end_time,
+            total_allocation_amount: total_allocation_amount,
+            cliff: cliff,
+            beneficiary: wallet.publicKey?.toString()!,
+            account: account.toString()
+          }, {
+            headers: {'Content-Type': 'application/json'},
+          })
+          const tx = Transaction.from(Buffer.from(metadata.data.tx, 'base64'));
+          const {
+            context: { slot: minContextSlot },
+            value: { blockhash, lastValidBlockHeight },
+          } = await connection.getLatestBlockhashAndContext();
+
+          const signature = await wallet.sendTransaction(tx, connection, {minContextSlot});
+          try {
+            await connection.confirmTransaction(
+              { blockhash, lastValidBlockHeight, signature },
+              "confirmed"
+            );
+
+            console.log("Confirming transaction...");
+            toast.info("Confirming Transaction...")
+
+            let hashExpired = false;
+              let txSuccess = false;
+              while (!hashExpired && !txSuccess) {
+                  const { value: status } = await connection.getSignatureStatus(signature);
+                  if (status && ((status.confirmationStatus === 'confirmed' || status.confirmationStatus === 'finalized'))) {
+                      txSuccess = true;
+                      toast.success('Employee Account Created', {
+                        action: {
+                          label: <a 
+                          href={`https://explorer.solana.com/tx/${signature}?cluster=devnet`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <ExternalLink size={16} />
+                        </a>,
+                          onClick: () => window.open(`https://explorer.solana.com/tx/${signature}?cluster=devnet`)
+                        }
+                      })
+                      console.log("Vesting Account Creation Transaction confirmed");
+                      break;
+                  }
+                  hashExpired = await isBlockhashExpired(connection, lastValidBlockHeight);
+                  if (hashExpired) {
+                      break;
+                  }
+                  const sleep = (ms: number) => {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                  }
+                  await sleep(2500);
+                }
+          } catch(err){
+            console.error(err);
+            console.log("Unable to create employee vesting account")
+          }
+
+          return signature
+    },
     onSuccess: (tx) => {
-      toast.success('Employee Account Created', {
-        action: {
-          label: <a 
-          href={`https://explorer.solana.com/tx/${tx}?cluster=devnet`} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="text-blue-500 hover:text-blue-700"
-        >
-          <ExternalLink size={16} />
-        </a>,
-          onClick: () => window.open(`https://explorer.solana.com/tx/${tx}?cluster=devnet`)
-        }
-      })
+      console.log("Employee Vesting Account Created Successfully!")
       return vestingAccounts.refetch()
     },
     onError: () => toast.error("Failed to initialize employee account"),
