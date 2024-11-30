@@ -113,11 +113,11 @@ export function AppHero({
   subtitle: ReactNode
 }) {
   return (
-    <div className="hero py-[64px]">
+    <div className="hero">
       <div className="hero-content text-center">
         <div className="max-w-2xl">
-          {typeof title === 'string' ? <h1 className={`text-6xl tracking-tighter font-semibold`}>{title}</h1> : title}
-          {typeof subtitle === 'string' ? <p className="py-6 tracking-wider">{subtitle}</p> : subtitle}
+          {typeof title === 'string' ? <h1 className={`text-6xl mb--8 tracking-tighter font-semibold`}>{title}</h1> : title}
+          {typeof subtitle === 'string' ? <p className="pb-12 mt--8 tracking-wider">{subtitle}</p> : subtitle}
           {children}
         </div>
       </div>

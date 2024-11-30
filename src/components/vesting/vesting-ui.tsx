@@ -26,57 +26,101 @@ export function VestingCreate() {
   const {data, isError} = createVestingAccountMutation;
   
   return (
-    <main className="container py-4">
-        <div className="mb-2 flex justify-center">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                className="bg-white text-black"
-              >
-                Create New Vesting Account
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Vesting Account</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-1">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="company" className="text-right">
-                    Company Name
-                  </Label>
-                  <Input
-                    id="company"
-                    value={newCompany}
-                    onChange={(e) => setNewCompany(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="mintAddress" className="text-right">
-                    Token Mint Address
-                  </Label>
-                  <Input
-                    id="mintAddress"
-                    value={newMintAddress}
-                    onChange={(e) => setNewMintAddress(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-              </div>
-              <Button onClick={() => 
+    // <main className="container py-4">
+    //     <div className="mb-2 flex justify-center">
+    //       <Dialog>
+    //         <DialogTrigger asChild>
+    //           <Button
+    //             className="bg-white text-black"
+    //           >
+    //             Create New Vesting Account
+    //           </Button>
+    //         </DialogTrigger>
+    //         <DialogContent>
+    //           <DialogHeader>
+    //             <DialogTitle>Create New Vesting Account</DialogTitle>
+    //           </DialogHeader>
+    //           <div className="grid gap-4 py-1">
+    //             <div className="grid grid-cols-4 items-center gap-4">
+    //               <Label htmlFor="company" className="text-right">
+    //                 Company Name
+    //               </Label>
+    //               <Input
+    //                 id="company"
+    //                 value={newCompany}
+    //                 onChange={(e) => setNewCompany(e.target.value)}
+    //                 className="col-span-3"
+    //               />
+    //             </div>
+    //             <div className="grid grid-cols-4 items-center gap-4">
+    //               <Label htmlFor="mintAddress" className="text-right">
+    //                 Token Mint Address
+    //               </Label>
+    //               <Input
+    //                 id="mintAddress"
+    //                 value={newMintAddress}
+    //                 onChange={(e) => setNewMintAddress(e.target.value)}
+    //                 className="col-span-3"
+    //               />
+    //             </div>
+    //           </div>
+    //           <Button onClick={() => 
+    //             createVestingAccountMutation.mutateAsync({
+    //               company_name: newCompany,
+    //               mint: newMintAddress
+    //             })
+    //           }
+    //           disabled={createVestingAccountMutation.isPending}
+    //           >
+    //             Create New Vesting Account</Button>
+    //         </DialogContent>
+    //       </Dialog>
+    //     </div>
+    //     </main>
+        <main className="container py-8 pb-8 px-16 mt--32 border-white rounded-3xl border-2">
+        <div className="space-y-4">
+        {/* <div className="grid grid-cols-4 items-center gap-4">
+          <span className='w-full font-medium'>Create A Vesting Account</span>
+        </div> */}
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="company" className="text-right">
+              Company
+            </Label>
+            <Input
+              id="company"
+              value={newCompany}
+              onChange={(e) => setNewCompany(e.target.value)}
+              className="col-span-3 rounded-full"
+              placeholder="Company Name"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="mintAddress" className="text-right">
+              Token Mint
+            </Label>
+            <Input
+              id="mintAddress"
+              value={newMintAddress}
+              onChange={(e) => setNewMintAddress(e.target.value)}
+              className="col-span-3 rounded-full"
+              placeholder="Token Mint Address"
+            />
+          </div>
+          <div className="flex justify-center">
+            <Button 
+              onClick={() => 
                 createVestingAccountMutation.mutateAsync({
                   company_name: newCompany,
                   mint: newMintAddress
-                })
-              }
+                })}
               disabled={createVestingAccountMutation.isPending}
-              >
-                Create New Vesting Account</Button>
-            </DialogContent>
-          </Dialog>
+              className="bg-white text-black"
+            >
+              Create New Vesting Account
+            </Button>
+          </div>
         </div>
-        </main>
+      </main>
   )
 }
 

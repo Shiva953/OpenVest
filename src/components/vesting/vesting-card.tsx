@@ -99,7 +99,7 @@ export default function VestingCard({ account }: { account: string }){
 
     return (
       <>
-      <Card className="bg-[.dark]"
+      <Card className="bg-[rgb(2,8,23)]"
       >
       {/* <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/50 to-purple-600/50 rounded-xl blur-sm opacity-50 group-hover:opacity-75 transition duration-300 ease-in-out z-[-1]"></div> */}
         <div>
