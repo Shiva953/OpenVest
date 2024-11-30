@@ -22,7 +22,7 @@ const compressPublicKey = (key: string) => {
 };
 
 export function AllocationList(){
-    const { program, getProgramAccount, employeeAccounts } = useVestingProgram();
+    const { getProgramAccount, employeeAccounts } = useVestingProgram();
   
     if (getProgramAccount.isLoading) {
       return (
@@ -80,26 +80,22 @@ export function AllocationCard({account} : { account: string }){
     );
 
     const { getVestingAccountStateQuery } = useVestingProgramAccount({account: companyVestingAccount!});
+
+    const allData = useMemo(
+      () => getEmployeeVestingAccountStateQuery.data,
+      [getEmployeeVestingAccountStateQuery.data]
+    );
+
     
-    const startTime = useMemo(
-      () => getEmployeeVestingAccountStateQuery.data?.startTime ?? new BN(0),
-      [getEmployeeVestingAccountStateQuery.data?.startTime]
-    );
-  
-    const endTime = useMemo(
-      () => getEmployeeVestingAccountStateQuery.data?.endTime ?? new BN(0),
-      [getEmployeeVestingAccountStateQuery.data?.endTime]
-    );
+    const startTime = allData?.startTime || new BN(0)
+    const endTime = allData?.endTime || new BN(0);
+    const cliff_time = allData?.cliff || new BN(0)
   
     const total_allocation_amount = useMemo(
       () => getEmployeeVestingAccountStateQuery.data?.tokenAllocationAmount ?? new BN(0),
       [getEmployeeVestingAccountStateQuery.data?.tokenAllocationAmount]
     );
   
-    const cliff_time = useMemo(
-      () => getEmployeeVestingAccountStateQuery.data?.cliff ?? new BN(0),
-      [getEmployeeVestingAccountStateQuery.data?.cliff]
-    );
     const cliff_period_in_mins = ((cliff_time.sub(startTime)).toNumber())/60;
 
     const withdrawn_amount = useMemo(
@@ -107,15 +103,13 @@ export function AllocationCard({account} : { account: string }){
       [getEmployeeVestingAccountStateQuery.data?.withdrawnAmount]
     );
 
-    const tokenMint = useMemo(
-      () => getVestingAccountStateQuery.data?.mint,
-      [getVestingAccountStateQuery.data?.mint])
-     ?? new PublicKey("Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr");
-     const token_mint = tokenMint?.toString();
+      const vestingAccountData = useMemo(
+      () => getVestingAccountStateQuery.data,
+      [getVestingAccountStateQuery.data])
 
-     const company_name = useMemo(
-      () => getVestingAccountStateQuery.data?.companyName ?? "Unknown Company",
-      [getVestingAccountStateQuery.data?.companyName])
+      const tokenMint = vestingAccountData?.mint ?? new PublicKey("Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr");
+      const token_mint = tokenMint?.toString();
+      const company_name = vestingAccountData?.companyName ?? "Unknown company"
 
       const decimals = useTokenDecimals(tokenMint.toString())
 

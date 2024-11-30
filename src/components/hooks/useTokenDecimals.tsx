@@ -4,18 +4,33 @@ import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed")
 
-export default function useTokenDecimals(mint: string){
+export default function useTokenDecimals(mint: string) {
     const [decimal, setDecimal] = useState(9);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        async function getDecimals(){
-            const metadata = await getDecimalsAndSupplyToken(connection, mint);
-            const decimals = metadata?.decimals || 9;
-            setDecimal(decimals)
-            console.log("Decimals: ", decimals)
+        let isMounted = true;
+        async function getDecimals() {
+            try {
+                setIsLoading(true);
+                const metadata = await getDecimalsAndSupplyToken(connection, mint);
+                if (isMounted) {
+                    setDecimal(metadata?.decimals || 9);
+                }
+            } catch (error) {
+                console.error("Failed to fetch token decimals", error);
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
+            }
         }
-        getDecimals()
-    }, [mint])
+
+        getDecimals();
+        return () => {
+            isMounted = false;
+        };
+    }, []);
 
     return decimal;
 }

@@ -6,8 +6,6 @@ import * as React from 'react'
 import {ReactNode, Suspense, useEffect, useRef} from 'react'
 import { GeistMono } from 'geist/font/mono'
 import { Toaster, toast } from 'sonner'
-
-import {AccountChecker} from '../account/account-ui'
 import {ClusterChecker, ClusterUiSelect, ExplorerLink} from '../cluster/cluster-ui'
 import {WalletButton} from '../solana/solana-provider'
 import { ExternalLink } from 'lucide-react';
@@ -34,9 +32,7 @@ export function UiLayout({ children, links }: { children: ReactNode; links: { la
           <ClusterUiSelect />
         </div>
       </div>
-      <ClusterChecker>
-        <AccountChecker />
-      </ClusterChecker>
+
       <div className="flex-grow mx-4 lg:mx-auto">
         <Suspense
           fallback={
