@@ -248,7 +248,7 @@ export default function VestingCard({ account }: { account: string }){
             })}
             disabled={createEmployeeAccountMutation.isPending || !startDate || !endDate}
           >
-            Create Employee Vesting Account
+            Create Employee Vesting Schedule
           </Button>
           {/* <Button
             className="w-full bg-black transition-colors mt-2"

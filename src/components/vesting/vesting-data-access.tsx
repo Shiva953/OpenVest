@@ -12,8 +12,7 @@ import {useAnchorProvider} from '../solana/solana-provider'
 import { ExternalLink } from 'lucide-react'
 import { TOKEN_PROGRAM_ID, mintTo, createMintToInstruction } from '@solana/spl-token'
 import { BN } from "@coral-xyz/anchor"
-import axios, {Axios} from "axios"
-import { headers } from 'next/headers'
+import axios from "axios"
 
 interface CreateVestingArgs {
   company_name: string;

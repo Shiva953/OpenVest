@@ -109,11 +109,30 @@ export function AppHero({
   subtitle: ReactNode
 }) {
   return (
-    <div className="hero">
-      <div className="hero-content text-center">
-        <div className="max-w-2xl">
-          {typeof title === 'string' ? <h1 className={`text-6xl mb--8 tracking-tighter font-semibold`}>{title}</h1> : title}
-          {typeof subtitle === 'string' ? <p className="pb-12 mt--8 tracking-wider">{subtitle}</p> : subtitle}
+    <div className="hero shadow-2xl rounded-2xl overflow-hidden">
+    <div className="hero-content text-center">
+    <div className="max-w-2xl">
+          {typeof title === 'string' ? 
+            <h1 className={`
+              text-7xl 
+              mb--8 
+              tracking-tighter 
+              font-semibold 
+              drop-shadow-lg 
+              text-shadow-md
+            `}>{title}</h1> 
+          : title}
+          {typeof subtitle === 'string' ? 
+            <p className="
+              text-1.5xl 
+              pb-12 
+              mt--8 
+              tracking-wide 
+              italic 
+              drop-shadow-md 
+              text-shadow-sm
+            ">{subtitle}</p> 
+          : subtitle}
           {children}
         </div>
       </div>

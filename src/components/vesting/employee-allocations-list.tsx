@@ -8,9 +8,6 @@ import { BN } from "@coral-xyz/anchor"
 import { ExternalLink } from 'lucide-react'
 import useTokenDecimals from '../hooks/useTokenDecimals';
 
-// revamp UI, polish it, add new features(choosing mins/hrs/days in cliff, adding custom beneficiary while creating employee account)
-// move the program ixn calls to backend routes
-
 const formatDate = (timestamp: BN | "0") => {
   if (!timestamp || timestamp === "0") return "Not set";
   const date = new Date(timestamp.toNumber() * 1000);
@@ -128,7 +125,10 @@ export function AllocationCard({account} : { account: string }){
     const isClaimExpired = (Date.now()/1000) > endTime.toNumber();
   
     return (
-      <Card className="w-full mx-auto">
+      <Card className="w-full mx-auto no-underline group relative shadow-2xl shadow-zinc-900 p-px leading-6 inline-block">
+        <span className="absolute inset-0 overflow-hidden">
+          <span className="absolute inset-0 bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+        </span>
         <CardContent className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4 space-x-4">
             <div className="space-y-1">
@@ -177,7 +177,7 @@ export function AllocationCard({account} : { account: string }){
                   href={`https://solscan.io/token/${token_mint}?cluster=devnet`} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="text-blue-500 hover:text-blue-700"
+                  className="text-blue-500 hover:text-blue-700 z-20"
                 >
                   <ExternalLink size={16} />
                 </a>
@@ -204,7 +204,7 @@ export function AllocationCard({account} : { account: string }){
         <CardFooter className="flex justify-center pb-6">
           {!isClaimExpired ? (
             <Button 
-            className="bg-white text-black px-8 py-2 rounded-lg transition-colors duration-300"
+            className="z-20 bg-white text-black px-8 py-2 rounded-lg transition-colors duration-300"
             onClick={() => claimTokensMutation.mutateAsync()}
             disabled={claimTokensMutation.isPending}
           >
