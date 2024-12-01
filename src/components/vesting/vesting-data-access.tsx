@@ -91,12 +91,6 @@ export function useVestingProgram() {
         TOKEN_PROGRAM_ID,
       )
 
-      // const tx = new Transaction();
-
-      // tx.add(createVestingAccIxn);
-      // tx.add(mintTokensIxn);
-
-      // how do deserialize the serialized transaction returned from that route correctly
       const txn_metadata = await axios.post("http://localhost:3000/api/createCompanyVesting", {
         company_name: company_name,
         mint: mint,
@@ -106,7 +100,6 @@ export function useVestingProgram() {
       })
       console.log(txn_metadata)
       const tx = Transaction.from(Buffer.from(txn_metadata.data.tx, 'base64'));
-      // const tx = await wallet.signTransaction!(tx_)
 
       const {
         context: { slot: minContextSlot },
