@@ -20,39 +20,7 @@ import { CalendarIcon } from "lucide-react";
 import { TimeInput } from "@nextui-org/date-input";
 import { useConnection } from "@solana/wallet-adapter-react";
 import useTokenDecimals from "../hooks/useTokenDecimals";
-
-interface CreateEmployeeArgs {
-    startTime: number;
-    endTime: number;
-    totalAmount: number;
-    cliffTime: number;
-  }
-
-  const dateToUnixTimestamp = (date: Date | undefined): number => {
-    if (!date) return 0;
-    return Math.floor(date.getTime() / 1000);
-  };
-
-  const getUnixTimestamp = (startDate: Date, startTiming: string) => {
-    if (!startDate || !startTiming) return 0;
-    // Parse the time string (HH:mm)
-    const [hours, minutes] = startTiming.split(':').map(Number);
-    // Create a date object with the selected date and time
-    const combinedDateTime = setMinutes(
-      setHours(startDate, hours), 
-      minutes
-    );
-    // Convert to Unix timestamp (seconds)
-    return Math.floor(getTime(combinedDateTime) / 1000);
-  };
-
-  const cliffPeriodToCliffTime = (startTime: number, cliffPeriod: number) => {
-    return startTime + cliffPeriodInMinutesToUnixSeconds(cliffPeriod);
-  }
-
-  const cliffPeriodInMinutesToUnixSeconds = (cliffPeriod: number) => {
-    return cliffPeriod * 60;
-  }
+import { getUnixTimestamp, cliffPeriodToCliffTime } from "@/app/lib/utils"
 
 export default function VestingCard({ account }: { account: string }){
     const { connection } = useConnection()

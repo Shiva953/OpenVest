@@ -6,16 +6,8 @@ import { WalletButton } from '../solana/solana-provider'
 import { AppHero } from '../ui/ui-layout'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
-import { useVestingProgram } from './vesting-data-access'
 import { VestingCreate, VestingList } from './vesting-ui'
 import { AllocationList } from './employee-allocations-list'
-
-
-//FINAL THINGS LEFT:
-// 1. ADD AESTHETIC BG(DOTS) + NEON GLOW AROUND CARDS
-// 2. ADD BENEFICIARY/EMPLOYEE ADDRESS OPTION(WHEN CREATING VESTING ACCOUNT FOR EMPLOYEE)
-
-// DEADLINE - TODAY, EOD.
 
 export default function VestingFeature() {
   const { publicKey } = useWallet()

@@ -7,16 +7,7 @@ import { format, getTime } from "date-fns"
 import { BN } from "@coral-xyz/anchor"
 import { ExternalLink } from 'lucide-react'
 import useTokenDecimals from '../hooks/useTokenDecimals';
-
-const formatDate = (timestamp: BN | "0") => {
-  if (!timestamp || timestamp === "0") return "Not set";
-  const date = new Date(timestamp.toNumber() * 1000);
-  return format(date, 'MMM dd, yyyy h:mmaa');
-};
-
-const compressPublicKey = (key: string) => {
-  return `${key.slice(0, 4)}…${key.slice(-4)}`;
-};
+import { formatDate, compressPublicKey } from '@/app/lib/utils';
 
 export function AllocationList(){
     const { getProgramAccount, employeeAccounts } = useVestingProgram();

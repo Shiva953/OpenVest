@@ -93,7 +93,7 @@ export function VestingCreate() {
                 mint: newMintAddress
               })}
             disabled={createVestingAccountMutation.isPending}
-            className="bg-[#39C3EF] hover:bg-[#39C3EF]/90"
+            className="bg-[#39C3EF] hover:bg-[#39C3EF]/90 text-white"
             style={{
               boxShadow:
                 "0px -1px 0px 0px #ffffff40 inset, 0px 1px 0px 0px #ffffff40 inset",
