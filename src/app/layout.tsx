@@ -7,6 +7,8 @@ import { ReactQueryProvider } from './react-query-provider'
 import { NextUIProvider } from "@nextui-org/react";
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
+import { JupiterWalletProvider } from '@/components/solana/unified-wallet-provider'
+import { DayPickerProvider } from 'react-day-picker'
 
 export const metadata = {
   title: 'vesting',
@@ -24,13 +26,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`dark ${GeistSans.className}`}>
       <body>
         <ReactQueryProvider>
+        
           <ClusterProvider>
             <SolanaProvider>
+            {/* <JupiterWalletProvider> */}
               {/* <UiLayout links={links}> */}
               <NextUIProvider>
+                {/* <DayPickerProvider> */}
                 {children}
+                {/* </DayPickerProvider> */}
                 <Toaster position="bottom-right" />
               </NextUIProvider>
+              {/* </JupiterWalletProvider> */}
                 {/* </UiLayout> */}
             </SolanaProvider>
           </ClusterProvider>

@@ -33,10 +33,15 @@ export function useVestingProgram() {
   const { cluster } = useCluster()
 
   const provider = useAnchorProvider()
-  const programId = useMemo(() => getVestingProgramId(cluster.network as Cluster), [cluster])
+  const clusterNetwork = cluster.network as Cluster ?? "devnet";
+  const programId = useMemo(() => getVestingProgramId(clusterNetwork), [clusterNetwork])
   const program = getVestingProgram(provider)
 
   const wallet = useWallet();
+
+  console.log("PK", wallet.publicKey?.toString())
+  console.log(cluster)
+  console.log(programId)
 
   // the main vesting program account
   const getProgramAccount = useQuery({
@@ -61,7 +66,7 @@ export function useVestingProgram() {
     mutationKey: ["vestingAccount", "create", { cluster }],
     mutationFn: async({ company_name, mint }: CreateVestingArgs) => {
 
-      const c = cluster ?? "devnet";
+      const clusterNetwork = cluster ?? "devnet";
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
       const createVestingAccIxn = await program.methods.createVestingAccount(company_name)

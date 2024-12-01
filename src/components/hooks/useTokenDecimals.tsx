@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDecimalsAndSupplyToken } from "@/app/lib/getTokenDecimals";
+import { getDecimalsAndSupplyToken } from "@/app/lib/utils";
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed")

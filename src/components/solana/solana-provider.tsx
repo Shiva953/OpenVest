@@ -13,6 +13,7 @@ import {
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import { ReactNode, useCallback, useMemo } from 'react'
 import { useCluster } from '../cluster/cluster-data-access'
+import { JupiterWalletProvider } from './unified-wallet-provider'
 
 require('@solana/wallet-adapter-react-ui/styles.css')
 
@@ -29,11 +30,13 @@ export function SolanaProvider({ children }: { children: ReactNode }) {
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={[]} onError={onError} autoConnect={true}>
-        <WalletModalProvider>
+      <JupiterWalletProvider>
+      {/* <WalletProvider wallets={[]} onError={onError} autoConnect={true}>
+        <WalletModalProvider> */}
           {children}
-          </WalletModalProvider>
-      </WalletProvider>
+        </JupiterWalletProvider>
+          {/* </WalletModalProvider>
+      </WalletProvider> */}
     </ConnectionProvider>
   )
 }
