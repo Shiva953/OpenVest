@@ -13,18 +13,7 @@ import { ExternalLink } from 'lucide-react'
 import { TOKEN_PROGRAM_ID, mintTo, createMintToInstruction } from '@solana/spl-token'
 import { BN } from "@coral-xyz/anchor"
 import axios from "axios"
-
-interface CreateVestingArgs {
-  company_name: string;
-  mint: string;
-}
-
-interface CreateEmployeeArgs {
-  start_time: number;
-  end_time: number;
-  total_allocation_amount: number;
-  cliff: number;
-}
+import { CreateVestingArgs, CreateEmployeeArgs } from '@/types'
 
 //getting all the vesting accounts, program methods, and defining individual hooks for ops
 //useQuery for fetching Vesting Accounts associated with given programId, useMutation for creating vesting accounts/claiming tokens

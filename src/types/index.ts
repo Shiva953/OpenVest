@@ -32,3 +32,15 @@ export interface JupToken {
     updated_at: string
     description: string
   }
+
+  export interface CreateVestingArgs {
+    company_name: string;
+    mint: string;
+  }
+  
+  export interface CreateEmployeeArgs {
+    start_time: number;
+    end_time: number;
+    total_allocation_amount: number;
+    cliff: number;
+  }

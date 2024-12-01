@@ -129,36 +129,22 @@ export default function VestingCard({ account }: { account: string }){
               <Label className="text-sm font-medium">End Time</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  {/* <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full pl-3 text-left font-normal",
-                      !endDate && "text-muted-foreground",
-                    )}
-                  >
-                    {endDate ? (
-                      format(endDate, "PPP")
-                    ) : (
-                      <span>Pick end</span>
-                    )}
-                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                  </Button> */}
                   <Button
                   variant="outline"
                   className={cn(
                     "w-full pl-3 text-left font-normal",
                     !endDate && "text-muted-foreground",
-                    "flex items-center justify-between" // Ensure proper alignment
+                    "flex items-center justify-between"
                   )}
                 >
                   <span className="truncate max-w-full">
                     {endDate ? (
                       <>
                         <span className="hidden sm:inline">
-                          {format(endDate, "PPP")} {/* Full format for larger screens */}
+                          {format(endDate, "PPP")} 
                         </span>
                         <span className="sm:hidden">
-                          {format(endDate, "MMM dd")} {/* Shortened format for small screens */}
+                          {format(endDate, "MMM dd")}
                         </span>
                       </>
                     ) : (
@@ -218,12 +204,6 @@ export default function VestingCard({ account }: { account: string }){
           >
             Create Employee Vesting Schedule
           </Button>
-          {/* <Button
-            className="w-full bg-black transition-colors mt-2"
-            onClick={() => setShowAllocationList(true)}
-          >
-            Show Employee Vesting Accounts for this Company
-          </Button> */}
         </CardContent>
         </div>
       </Card>
