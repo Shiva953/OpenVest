@@ -6,8 +6,8 @@ import { PublicKey } from '@solana/web3.js'
 import { format, getTime } from "date-fns"
 import { BN } from "@coral-xyz/anchor"
 import { ExternalLink } from 'lucide-react'
-import useTokenDecimals from '../hooks/useTokenDecimals';
-import { formatDate, compressPublicKey } from '@/app/lib/utils';
+import useTokenDecimals from '../../hooks/useTokenDecimals';
+import { formatDate, formatAddress, compressPublicKey, } from '@/app/lib/utils';
 
 export function AllocationList(){
     const { getProgramAccount, employeeAccounts } = useVestingProgram();
@@ -97,6 +97,7 @@ export function AllocationCard({account} : { account: string }){
 
       const tokenMint = vestingAccountData?.mint ?? new PublicKey("Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr");
       const token_mint = tokenMint?.toString();
+      console.log("benef here: ,", allData?.beneficiary.toString())
       const company_name = vestingAccountData?.companyName ?? "Unknown company"
 
       const decimals = useTokenDecimals(tokenMint.toString())
@@ -121,6 +122,19 @@ export function AllocationCard({account} : { account: string }){
           <span className="absolute inset-0 bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
         </span>
         <CardContent className="p-6 space-y-4">
+          <h2 className='mx-auto'>
+            <div className='flex flex-row mx-auto'>
+              <span>Token allocation for {' '}</span>
+            <span className='text-medium text-teal-400'>{compressPublicKey(allData?.beneficiary.toString() || 'yobenefwasnotdefinedforthis....') }</span>
+            <a 
+                  href={`https://solscan.io/address/${allData?.beneficiary.toString()}?cluster=devnet`} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                >
+                  <ExternalLink size={16} />
+                </a>
+            </div>
+          </h2>
           <div className="grid grid-cols-2 gap-4 space-x-4">
             <div className="space-y-1">
               <h4 className="text-sm text-gray-500 tracking-tighter">Start Date</h4>
@@ -179,7 +193,7 @@ export function AllocationCard({account} : { account: string }){
           {/* Withdrawn Tokens Progress Bar */}
           <div className="space-y-4 mt-4">
             <div className="flex justify-between text-sm text-gray-600 mt-8">
-              <span className='mb--24 tracking-tight text-gray-300'>Withdrawn Tokens</span>
+              <span className='mb--24 tracking-tight text-gray-300'>Unlocked Tokens</span>
               <span className='text-white font-bold'>{actualWithdrawnAmount.toLocaleString()} / {actualTotalAllocationAmount.toLocaleString()}</span>
             </div>
             <div className="w-full bg-gray-300 rounded-full h-2.5">

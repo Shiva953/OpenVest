@@ -43,4 +43,5 @@ export interface JupToken {
     end_time: number;
     total_allocation_amount: number;
     cliff: number;
+    beneficiary: string;
   }

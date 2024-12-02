@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { TimeInput } from "@nextui-org/date-input";
 import { useConnection } from "@solana/wallet-adapter-react";
-import useTokenDecimals from "../hooks/useTokenDecimals";
+import useTokenDecimals from "../../hooks/useTokenDecimals";
 import { getUnixTimestamp, cliffPeriodToCliffTime } from "@/app/lib/utils"
 
 export default function VestingCard({ account }: { account: string }){
@@ -30,6 +30,7 @@ export default function VestingCard({ account }: { account: string }){
     const [endDate, setEndDate] = useState<Date>();
     const [endTiming, setEndTiming] = useState('12:59');
     const [cliffTime, setCliffTime] = useState(400);
+    const [beneficiary, setBeneficiary] = useState('')
     const [totalAmount, setTotalAmount] = useState(100000);
 
     const {data, isLoading, isError} = getVestingAccountStateQuery;
@@ -39,6 +40,7 @@ export default function VestingCard({ account }: { account: string }){
         () => getVestingAccountStateQuery.data?.companyName ?? "0",
         [getVestingAccountStateQuery.data?.companyName]
     );
+    console.log(beneficiary)
 
     const tokenMint = useMemo(
       () => getVestingAccountStateQuery.data?.mint,
@@ -192,6 +194,16 @@ export default function VestingCard({ account }: { account: string }){
               />
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-sm font-medium">Beneficiary</Label>
+              <Input 
+                type="string" 
+                onChange={(e) => setBeneficiary(e.target.value)}
+                className="w-full bg-transparent"
+              />
+            </div>
+            </div>
           <Button 
             className="w-full bg-white text-black transition-colors mt-2"
             onClick={() => createEmployeeAccountMutation.mutateAsync({
@@ -199,6 +211,7 @@ export default function VestingCard({ account }: { account: string }){
               end_time: endTime,
               total_allocation_amount: totalAmount * (10**(tokenDecimals)),
               cliff: cliffTime,
+              beneficiary: beneficiary,
             })}
             disabled={createEmployeeAccountMutation.isPending || !startDate || !endDate}
           >

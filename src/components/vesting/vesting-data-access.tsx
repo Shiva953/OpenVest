@@ -10,8 +10,7 @@ import { isBlockhashExpired } from '@/app/lib/utils'
 import {useCluster} from '../cluster/cluster-data-access'
 import {useAnchorProvider} from '../solana/solana-provider'
 import { ExternalLink } from 'lucide-react'
-import { TOKEN_PROGRAM_ID, mintTo, createMintToInstruction } from '@solana/spl-token'
-import { BN } from "@coral-xyz/anchor"
+import { TOKEN_PROGRAM_ID, createMintToInstruction } from '@solana/spl-token'
 import axios from "axios"
 import { CreateVestingArgs, CreateEmployeeArgs } from '@/types'
 
@@ -182,14 +181,14 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
 
   const createEmployeeAccountMutation = useMutation({
     mutationKey: ['vesting', 'create_employee_vesting_account'],
-    mutationFn: async({ start_time, end_time, total_allocation_amount, cliff }: CreateEmployeeArgs) => 
+    mutationFn: async({ start_time, end_time, total_allocation_amount, cliff, beneficiary }: CreateEmployeeArgs) => 
     {
           const metadata = await axios.post("http://localhost:3000/api/createEmployeeVesting", {
             start_time: start_time,
             end_time: end_time,
             total_allocation_amount: total_allocation_amount,
             cliff: cliff,
-            beneficiary: wallet.publicKey?.toString()!,
+            beneficiary: beneficiary,
             account: account.toString()
           }, {
             headers: {'Content-Type': 'application/json'},
@@ -283,6 +282,7 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
       })
       return tx
     },
+    onError: () => toast.error("Failed to claim allocated tokens!"),
   })
 
   return {

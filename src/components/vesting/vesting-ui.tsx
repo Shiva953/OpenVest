@@ -6,6 +6,9 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import VestingCard from './vesting-card'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { formatAddress } from '@/app/lib/utils'
+import { ExternalLink } from 'lucide-react'
 
 export function VestingCreate() {
   const [newCompany, setNewCompany] = useState('')
@@ -13,16 +16,16 @@ export function VestingCreate() {
   const {createVestingAccountMutation} = useVestingProgram();
   
   return (
-    <main className="container relative bg-black w-full py-8 pb-8 px-32 mt--32 rounded-3xl flex justify-center 
-      before:absolute before:inset-1 before:-z-10 
-      before:bg-blue-500/25 
-      before:blur-lg 
-      before:rounded-[1.5rem] 
-      before:animate-pulse-soft
-      before:shadow-[0_0_40px_10px_rgba(59,130,246,0.6)]">
+    <main className="container relative bg-white w-full py-8 pb-8 px-32 mt--32 rounded-3xl flex justify-center">
+      {/* // before:absolute before:inset-1 before:-z-10 
+      // before:bg-blue-500/25 
+      // before:blur-0 
+      // before:rounded-[1.5rem] 
+      // before:animate-pulse-soft
+      // before:shadow-[0_0_40px_10px_rgba(59,130,246,0.6)]"> */}
       <div className="space-y-8 w-full max-w-3xl">
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="company" className="text-right text-base">
+          <Label htmlFor="company" className="text-right text-base text-black">
             Company
           </Label>
           <Input
@@ -54,7 +57,7 @@ export function VestingCreate() {
           />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="mintAddress" className="text-right text-base">
+          <Label htmlFor="mintAddress" className="text-right text-base text-black">
             Token Mint
           </Label>
           <Input
@@ -109,6 +112,9 @@ export function VestingCreate() {
 
 export function VestingList() {
   const { getProgramAccount, vestingAccounts } = useVestingProgram();
+  const wallet = useWallet()
+  const pubKeyString = wallet.publicKey?.toString() || "";
+  const user = formatAddress(pubKeyString)
 
   if (getProgramAccount.isLoading) {
     return (
@@ -129,8 +135,20 @@ export function VestingList() {
   }
 
   return (
-    <div className="px-4 -mt-4">
-      <div className="max-w-7xl mx-auto rounded-xl shadow-sm p-4">
+    <div className="px-4">
+      <div className="max-w-7xl mx-auto rounded-xl p-4">
+      <h2 className='z-40 font-bold text-center pb-8 text-2xl text-white'>
+        Vesting accounts for{' '}
+        <a
+          href={`https://solscan.io/address/${pubKeyString}`}
+          rel="noopener noreferrer"
+          target="_blank"
+          className='inline-flex items-center gap-1 text-cyan-400 hover:text-blue-800'
+        >
+          <span className="font-semibold">{user}</span>
+          <ExternalLink size={16}/>
+        </a>
+      </h2>
         {vestingAccounts.isLoading ? (
           <div className="flex justify-center items-center h-24">
             <span className="loading loading-spinner loading-lg" />
