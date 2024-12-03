@@ -33,26 +33,6 @@ export default function ConnectButton() {
             {/* </AvatarFallback> */}
         </DropdownMenuTrigger>
         <DropdownMenuContent className="mr-4">
-          {/* <DropdownMenuLabel>
-            {formatAddress(publicKey?.toString()!)}
-          </DropdownMenuLabel> */}
-          {/* <DropdownMenuSeparator /> */}
-          {/* <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => {
-              router.push("/edit");
-            }}
-          >
-            Edit profile
-          </DropdownMenuItem> */}
-          {/* <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => {
-              router.push("/requests");
-            }}
-          >
-            Requests
-          </DropdownMenuItem> */}
           <DropdownMenuItem className="cursor-pointer" onClick={disconnect}>
             Disconnect
           </DropdownMenuItem>
