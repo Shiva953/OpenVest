@@ -3,12 +3,11 @@
 import { PublicKey, Connection } from "@solana/web3.js";
 import { useVestingProgramAccount } from "./vesting-data-access"
 import { Card, CardTitle, CardHeader, CardContent, CardFooter } from "../ui/card";
-import { BN } from "@coral-xyz/anchor"
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { useState, useMemo } from "react";
-import { format, setHours, setMinutes, getTime } from 'date-fns'
+import { format } from 'date-fns'
 import {
   Popover,
   PopoverContent,
@@ -23,7 +22,6 @@ import useTokenDecimals from "../../hooks/useTokenDecimals";
 import { getUnixTimestamp, cliffPeriodToCliffTime } from "@/app/lib/utils"
 
 export default function VestingCard({ account }: { account: string }){
-    const { connection } = useConnection()
     const { getVestingAccountStateQuery, createEmployeeAccountMutation } = useVestingProgramAccount({account: new PublicKey(account)})
     const [startDate, setStartDate] = useState<Date>();
     const [startTiming, setStartTiming] = useState('12:00');

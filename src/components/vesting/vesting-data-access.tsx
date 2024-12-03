@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import { isBlockhashExpired } from '@/app/lib/utils'
 import {useAnchorProvider} from '../solana/solana-provider'
 import { ExternalLink } from 'lucide-react'
-import { TOKEN_PROGRAM_ID, createMintToInstruction } from '@solana/spl-token'
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import axios from "axios"
 import { CreateVestingArgs, CreateEmployeeArgs } from '@/types'
 
@@ -49,31 +49,7 @@ export function useVestingProgram() {
   const createVestingAccountMutation = useMutation({
     mutationKey: ["vestingAccount", "create", { cluster }],
     mutationFn: async({ company_name, mint }: CreateVestingArgs) => {
-
-      const clusterNetwork = cluster ?? "devnet";
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-
-      const createVestingAccIxn = await program.methods.createVestingAccount(company_name)
-      .accounts({ 
-        signer: wallet.publicKey!,
-        mint: new PublicKey(mint),
-        tokenProgram: TOKEN_PROGRAM_ID
-       })
-       .instruction();
-
-      let [treasuryTokenAccount] = PublicKey.findProgramAddressSync(
-        [Buffer.from("vesting treasury"), Buffer.from(company_name)],
-        program.programId
-      );
-      const amount = 10_000 * 10 ** 9;
-      const mintTokensIxn = createMintToInstruction(
-        new PublicKey(mint),
-        treasuryTokenAccount,
-        wallet.publicKey!,
-        amount,
-        [],
-        TOKEN_PROGRAM_ID,
-      )
 
       const txn_metadata = await axios.post("http://localhost:3000/api/createCompanyVesting", {
         company_name: company_name,
@@ -167,15 +143,15 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
   const getVestingAccountStateQuery = useQuery({
     queryKey: ["vesting", "fetch", "vestingAccount", { cluster, account }],
     queryFn: () => program.account.vestingAccount.fetch(account, "confirmed",),
-    staleTime: 2 * 60 * 1000, // 5 minutes
-    retry: 1 // Limit retry attempts
+    staleTime: 2 * 60 * 1000,
+    retry: 1
   })
 
   const getEmployeeVestingAccountStateQuery = useQuery({
     queryKey: ["vesting", "fetch", "employeeVestingAccount", { cluster, account }],
     queryFn: () => program.account.employeeVestingAccount.fetch(account, "confirmed",),
-    staleTime: 2 * 60 * 1000, // 5 minutes
-    retry: 1 // Limit retry attempts
+    staleTime: 2 * 60 * 1000,
+    retry: 1
   })
 
 

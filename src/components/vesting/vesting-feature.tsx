@@ -33,8 +33,8 @@ export default function VestingFeature() {
     </nav>
       {/* <ConnectButton/> */}
       <AppHero
-        title="EzVest"
-        subtitle={'Reward your project contributors with vested tokens!'}
+        title="VestX"
+        subtitle={'Create Token Vesting Schedules for companies and their employees'}
       >
         <VestingCreate />
       </AppHero>

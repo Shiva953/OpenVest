@@ -10,9 +10,6 @@ export const JupiterWalletProvider = ({children} : {children: React.ReactNode}) 
     const wallets: Adapter[] = useMemo(() => {
         return [
           new PhantomWalletAdapter(),
-          new SolflareWalletAdapter(),
-          new CoinbaseWalletAdapter(),
-          new TrustWalletAdapter(),
         ].filter((item) => item && item.name && item.icon) as Adapter[];
       }, []);
 

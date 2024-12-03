@@ -2,16 +2,13 @@
 
 import dynamic from 'next/dynamic'
 import { AnchorProvider } from '@coral-xyz/anchor'
-import { WalletError } from '@solana/wallet-adapter-base'
 import {
   AnchorWallet,
   useConnection,
   useWallet,
   ConnectionProvider,
-  WalletProvider,
 } from '@solana/wallet-adapter-react'
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
-import { ReactNode, useCallback, useMemo } from 'react'
+import { ReactNode, useMemo } from 'react'
 import { JupiterWalletProvider } from './unified-wallet-provider'
 import { Cluster, clusterApiUrl } from '@solana/web3.js'
 
@@ -24,9 +21,6 @@ export const WalletButton = dynamic(async () => (await import('@solana/wallet-ad
 export function SolanaProvider({ children }: { children: ReactNode }) {
   const cluster:Cluster  = "devnet"
   const endpoint = useMemo(() => clusterApiUrl(cluster), [cluster])
-  const onError = useCallback((error: WalletError) => {
-    console.error(error)
-  }, [])
 
   return (
     <ConnectionProvider endpoint={endpoint}>

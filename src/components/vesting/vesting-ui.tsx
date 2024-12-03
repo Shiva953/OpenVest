@@ -1,7 +1,7 @@
 'use client'
 
-import { useVestingProgram, useVestingProgramAccount } from './vesting-data-access'
-import { useState, useMemo } from 'react'
+import { useVestingProgram } from './vesting-data-access'
+import { useState } from 'react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'

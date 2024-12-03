@@ -18,8 +18,6 @@ import { Button } from "../ui/button";
 
 export default function ConnectButton() {
   const { connected, disconnect, publicKey } = useWallet();
-  const router = useRouter();
-  const adress = formatAddress(publicKey?.toString()!);
 
   if (connected) {
     return (
