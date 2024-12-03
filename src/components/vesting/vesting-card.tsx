@@ -34,16 +34,8 @@ export default function VestingCard({ account }: { account: string }){
     const {data, isLoading, isError} = getVestingAccountStateQuery;
 
     //checking aptness of company name
-    const companyName = useMemo(
-        () => getVestingAccountStateQuery.data?.companyName ?? "0",
-        [getVestingAccountStateQuery.data?.companyName]
-    );
-    console.log(beneficiary)
-
-    const tokenMint = useMemo(
-      () => getVestingAccountStateQuery.data?.mint,
-      [getVestingAccountStateQuery.data?.mint]
-    );
+    const companyName = getVestingAccountStateQuery.data?.companyName ?? "0";
+    const tokenMint = getVestingAccountStateQuery.data?.mint ?? new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
 
     const { decimal: tokenDecimals, isDecimalsLoading } = useTokenDecimals(tokenMint?.toString() ?? 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
 
