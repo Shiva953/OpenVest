@@ -7,7 +7,6 @@ import {useMutation, useQuery} from '@tanstack/react-query'
 import {useMemo} from 'react'
 import { toast } from 'sonner'
 import { isBlockhashExpired } from '@/app/lib/utils'
-import {useCluster} from '../cluster/cluster-data-access'
 import {useAnchorProvider} from '../solana/solana-provider'
 import { ExternalLink } from 'lucide-react'
 import { TOKEN_PROGRAM_ID, createMintToInstruction } from '@solana/spl-token'
@@ -18,18 +17,15 @@ import { CreateVestingArgs, CreateEmployeeArgs } from '@/types'
 //useQuery for fetching Vesting Accounts associated with given programId, useMutation for creating vesting accounts/claiming tokens
 export function useVestingProgram() {
   const { connection } = useConnection()
-  const { cluster } = useCluster()
+  const cluster:Cluster = "devnet"
 
   const provider = useAnchorProvider()
-  const clusterNetwork = cluster.network as Cluster ?? "devnet";
+  const clusterNetwork = "devnet";
   const programId = useMemo(() => getVestingProgramId(clusterNetwork), [clusterNetwork])
   const program = getVestingProgram(provider)
 
   const wallet = useWallet();
 
-  console.log("PK", wallet.publicKey?.toString())
-  console.log(cluster)
-  console.log(programId)
 
   // the main vesting program account
   const getProgramAccount = useQuery({
@@ -163,19 +159,23 @@ export function useVestingProgram() {
 }
 
 export function useVestingProgramAccount({ account }: { account: PublicKey }) {
-  const { cluster } = useCluster()
+  const cluster:Cluster = "devnet"
   const { connection } = useConnection();
   const wallet = useWallet();
   const { program, vestingAccounts, employeeAccounts } = useVestingProgram()
 
   const getVestingAccountStateQuery = useQuery({
-    queryKey: ["vesting", "fetch", { cluster, account }],
-    queryFn: () => program.account.vestingAccount.fetch(account, "confirmed",)
+    queryKey: ["vesting", "fetch", "vestingAccount", { cluster, account }],
+    queryFn: () => program.account.vestingAccount.fetch(account, "confirmed",),
+    staleTime: 2 * 60 * 1000, // 5 minutes
+    retry: 1 // Limit retry attempts
   })
 
   const getEmployeeVestingAccountStateQuery = useQuery({
-    queryKey: ["vesting", "fetch", { cluster, account }],
-    queryFn: () => program.account.employeeVestingAccount.fetch(account, "confirmed",)
+    queryKey: ["vesting", "fetch", "employeeVestingAccount", { cluster, account }],
+    queryFn: () => program.account.employeeVestingAccount.fetch(account, "confirmed",),
+    staleTime: 2 * 60 * 1000, // 5 minutes
+    retry: 1 // Limit retry attempts
   })
 
 

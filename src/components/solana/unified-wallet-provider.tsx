@@ -19,7 +19,6 @@ export const JupiterWalletProvider = ({children} : {children: React.ReactNode}) 
   return (
     <UnifiedWalletProvider
       wallets={wallets}
-      
       config={{
         autoConnect: true,
         env: "devnet",

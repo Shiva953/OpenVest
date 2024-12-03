@@ -102,7 +102,7 @@ export function VestingCreate() {
                 "0px -1px 0px 0px #ffffff40 inset, 0px 1px 0px 0px #ffffff40 inset",
             }}
           >
-            Create New Vesting Account
+            Create New Company Vesting Account
           </Button>
         </div>
       </div>
@@ -138,7 +138,7 @@ export function VestingList() {
     <div className="px-4">
       <div className="max-w-7xl mx-auto rounded-xl p-4">
       <h2 className='z-40 font-bold text-center pb-8 text-2xl text-white'>
-        Vesting accounts for{' '}
+        Company Vestings for{' '}
         <a
           href={`https://solscan.io/address/${pubKeyString}`}
           rel="noopener noreferrer"

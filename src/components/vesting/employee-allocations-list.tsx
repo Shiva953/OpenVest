@@ -1,12 +1,15 @@
 import { useVestingProgram, useVestingProgramAccount } from './vesting-data-access'
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { PublicKey } from '@solana/web3.js'
+import { PublicKey, Cluster, clusterApiUrl } from '@solana/web3.js'
 import { BN } from "@coral-xyz/anchor"
 import { ExternalLink } from 'lucide-react'
 import useTokenDecimals from '../../hooks/useTokenDecimals';
-import { formatDate, formatAddress, compressPublicKey, } from '@/app/lib/utils';
+import { formatDate, compressPublicKey, } from '@/app/lib/utils';
+import { getVestingProgram, getVestingProgramId } from '@project/anchor';
+import { ProgramAccount } from '@coral-xyz/anchor';
+import { useAnchorProvider } from '../solana/solana-provider';
 
 export function AllocationList(){
     const { getProgramAccount, employeeAccounts } = useVestingProgram();
@@ -56,8 +59,159 @@ export function AllocationList(){
       </div>
     )
   }
-  
 
+  export function CompanyList(){
+    const { getProgramAccount, vestingAccounts } = useVestingProgram()
+    const [selectedCompany, setSelectedCompany] = useState<{account: string, companyName: string} | null>(null);
+
+    
+    // Get unique companies
+    const uniqueCompanies = useMemo(() => {
+      const companyMap = new Map<string, {account: string, companyName: string}>();
+      vestingAccounts.data?.forEach((vestingAccount) => {
+        const companyName = vestingAccount.account.companyName ?? "Unknown Company";
+        if (!companyMap.has(companyName)) {
+          companyMap.set(companyName, {
+            account: vestingAccount.publicKey.toBase58(),
+            companyName: companyName
+          });
+        }
+      });
+      return Array.from(companyMap.values());
+    }, [vestingAccounts.data]);
+
+    if (getProgramAccount.isLoading) {
+      return (
+        <div className="flex justify-center items-center h-24">
+          <span className="loading loading-spinner loading-lg" />
+        </div>
+      );
+    }
+  
+    if (!getProgramAccount.data?.value) {
+      return (
+        <div className="flex justify-center p-2">
+          <div className="bg-blue-50 text-black px-4 py-2 rounded-lg max-w-2xl">
+            <span>Program account not found. Make sure you have deployed the program and are on the correct cluster.</span>
+          </div>
+        </div>
+      );
+    }
+  
+    return(
+    <>
+    <div className="px-4 -mt-4">
+    <div className="max-w-7xl mx-auto rounded-xl shadow-sm p-4">
+    <div className='flex flex-col space-y-4'>
+      {uniqueCompanies.map((company) => (
+        <div 
+          key={company.companyName}
+          className="w-full bg-gray-800 hover:bg-gray-700 transition-colors duration-200 rounded-lg cursor-pointer"
+          onClick={() => setSelectedCompany(company)}
+        >
+          <div className="px-6 py-4 text-white text-lg font-semibold">
+            {company.companyName}
+          </div>
+        </div>
+      ))}
+  
+      {selectedCompany && (
+        <div className="mt-6">
+          <EmployeeAllocationsListForGivenCompany 
+            account={selectedCompany.account}
+            company_name={selectedCompany.companyName} 
+          />
+        </div>
+      )}
+    </div>
+    </div>
+    </div>
+    </>
+    )
+  }
+
+  // export function CompanyList(){
+  //   const { vestingAccounts } = useVestingProgram()
+    
+  //   return(
+  //   <>
+  //   <div className='flex-flex col'>
+  //     {/* a company bars list(horizontally full screen width bars listed in vertical order showing company name ) */}
+  //   {vestingAccounts.data?.map((vestingAccount) => {
+  //       const company = vestingAccount.account.companyName ?? "Unknown Company";
+  //       return(
+  //       <>
+  //       {/* company bar(on click should change open the EmployeeAllocationsListForGivenCompany component) */}
+  //       </>)
+  //   })}
+  //   </div>
+  //   </>
+  //   )
+  // }
+
+  export function EmployeeAllocationsListForGivenCompany({account, company_name} : {account: string, company_name: string}) {
+    const { employeeAccounts } = useVestingProgram();
+    const provider = useAnchorProvider()
+    const clusterNetwork = "devnet";
+    const program = getVestingProgram(provider)
+  
+    // Explicitly type the state with the correct type
+    const [filteredEmployeeAccounts, setFilteredEmployeeAccounts] = useState<ProgramAccount<{
+      beneficiary: PublicKey;
+      tokenAllocationAmount: BN;
+      withdrawnAmount: BN;
+      vestingAccount: PublicKey;
+      startTime: BN;
+      endTime: BN;
+      cliff: BN;
+      bump: number;
+    }>[]>([]);
+  
+    useEffect(() => {
+      const filterEmployeeAccounts = async () => {
+        if (!employeeAccounts.data) return;
+  
+        const filtered = await Promise.all(
+          employeeAccounts.data.map(async (employeeAccount) => {
+            try {
+              const getVestingAccountStateQuery = await program.account.vestingAccount.fetch(
+                employeeAccount.account.vestingAccount, 
+                "confirmed"
+              );
+              
+              return getVestingAccountStateQuery.companyName === company_name 
+                ? employeeAccount 
+                : null;
+            } catch (error) {
+              console.error("Error fetching vesting account:", error);
+              return null;
+            }
+          })
+        );
+  
+        // Remove null values and set the state
+        setFilteredEmployeeAccounts(
+          filtered.filter((acc) => acc !== null)
+        );
+      };
+  
+      filterEmployeeAccounts();
+    }, [company_name, employeeAccounts.data, program.account.vestingAccount]);
+  
+    return (
+      <div className='flex flex-col'>
+        {filteredEmployeeAccounts.map((acc) => (
+          <div 
+            key={acc.publicKey.toString()} 
+            className="transform transition-all duration-200 hover:scale-[1.02]"
+          >
+            <AllocationCard account={acc.publicKey.toBase58()} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+  
 export function AllocationCard({account} : { account: string }){
     const { getEmployeeVestingAccountStateQuery, claimTokensMutation } = useVestingProgramAccount({account: new PublicKey(account)})
 
@@ -99,10 +253,10 @@ export function AllocationCard({account} : { account: string }){
       console.log("benef here: ,", allData?.beneficiary.toString())
       const company_name = vestingAccountData?.companyName ?? "Unknown company"
 
-      const decimals = useTokenDecimals(tokenMint.toString())
+      const { decimal: tokenDecimals, isDecimalsLoading } = useTokenDecimals(tokenMint?.toString() ?? 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
 
-      const actualTotalAllocationAmount = Math.floor(total_allocation_amount?.toNumber() /(10**decimals));
-      const actualWithdrawnAmount = Math.floor(withdrawn_amount?.toNumber() /(10**decimals));
+      const actualTotalAllocationAmount = Math.floor(total_allocation_amount?.toNumber() /(10**tokenDecimals));
+      const actualWithdrawnAmount = Math.floor(withdrawn_amount?.toNumber() /(10**tokenDecimals));
 
     // withdrawn amount progress bar
     const progressPercentage = useMemo(() => {
@@ -123,7 +277,7 @@ export function AllocationCard({account} : { account: string }){
         <CardContent className="p-6 space-y-4">
           <h2 className='mx-auto'>
             <div className='flex flex-row mx-auto'>
-              <span>Token allocation for {' '}</span>
+              Token allocation for{' '}
             <span className='text-medium text-teal-400'>{compressPublicKey(allData?.beneficiary.toString() || 'yobenefwasnotdefinedforthis....') }</span>
             <a 
                   href={`https://solscan.io/address/${allData?.beneficiary.toString()}?cluster=devnet`} 
@@ -222,13 +376,6 @@ export function AllocationCard({account} : { account: string }){
             Claim Expired
           </Button>
           )}
-          {/* <Button 
-            className="bg-black text-white px-8 py-2 rounded-lg transition-colors duration-300"
-            onClick={() => claimTokensMutation.mutateAsync()}
-            disabled={claimTokensMutation.isPending}
-          >
-            Claim Tokens
-          </Button> */}
         </CardFooter>
       </Card>
     );

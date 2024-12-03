@@ -4,9 +4,7 @@ import Link from 'next/link'
 import {usePathname} from 'next/navigation'
 import * as React from 'react'
 import {ReactNode, Suspense, useEffect, useRef} from 'react'
-import { GeistMono } from 'geist/font/mono'
 import { Toaster, toast } from 'sonner'
-import {ClusterChecker, ClusterUiSelect, ExplorerLink} from '../cluster/cluster-ui'
 import {WalletButton} from '../solana/solana-provider'
 import { ExternalLink } from 'lucide-react';
 
@@ -29,7 +27,6 @@ export function UiLayout({ children, links }: { children: ReactNode; links: { la
         </div>
         <div className="flex-none space-x-2">
           <WalletButton />
-          <ClusterUiSelect />
         </div>
       </div>
 

@@ -1,5 +1,4 @@
-import './globals.css'
-import { ClusterProvider } from '@/components/cluster/cluster-data-access'
+import './globals.css';
 import { SolanaProvider } from '@/components/solana/solana-provider'
 import { Toaster, toast } from 'sonner'
 import { UiLayout } from '@/components/ui/ui-layout'
@@ -26,21 +25,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`dark ${GeistSans.className}`}>
       <body>
         <ReactQueryProvider>
-        
-          <ClusterProvider>
             <SolanaProvider>
-            {/* <JupiterWalletProvider> */}
-              {/* <UiLayout links={links}> */}
               <NextUIProvider>
-                {/* <DayPickerProvider> */}
                 {children}
-                {/* </DayPickerProvider> */}
                 <Toaster position="bottom-right" />
               </NextUIProvider>
-              {/* </JupiterWalletProvider> */}
-                {/* </UiLayout> */}
             </SolanaProvider>
-          </ClusterProvider>
         </ReactQueryProvider>
       </body>
     </html>

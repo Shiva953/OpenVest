@@ -5,7 +5,7 @@ import { AppHero } from '../ui/ui-layout'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { VestingCreate, VestingList } from './vesting-ui'
-import { AllocationList } from './employee-allocations-list'
+import { AllocationList, CompanyList } from './employee-allocations-list'
 import ConnectButton from '../solana/wallet-button'
 import { UnifiedWalletButton } from '@jup-ag/wallet-adapter'
 
@@ -56,6 +56,7 @@ export default function VestingFeature() {
             <Card>
               <CardContent className="pt-6 bg-[rgb(1,1,3)]">
                 <AllocationList />
+                {/* <CompanyList/> */}
               </CardContent>
             </Card>
           </TabsContent>

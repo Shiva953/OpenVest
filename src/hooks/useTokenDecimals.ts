@@ -6,22 +6,32 @@ const connection = new Connection(clusterApiUrl("devnet"), "confirmed")
 
 export default function useTokenDecimals(mint: string) {
     const [decimal, setDecimal] = useState(9);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isDecimalsLoading, setisDecimalsLoading] = useState(true);
 
     useEffect(() => {
+        // Only run effect if mint is truthy
+        if (!mint) {
+            setisDecimalsLoading(false);
+            return;
+        }
+
         let isMounted = true;
         async function getDecimals() {
             try {
-                setIsLoading(true);
+                setisDecimalsLoading(true);
                 const metadata = await getDecimalsAndSupplyToken(connection, mint);
                 if (isMounted) {
                     setDecimal(metadata?.decimals || 9);
                 }
             } catch (error) {
                 console.error("Failed to fetch token decimals", error);
+                // Set a default if fetch fails
+                if (isMounted) {
+                    setDecimal(9);
+                }
             } finally {
                 if (isMounted) {
-                    setIsLoading(false);
+                    setisDecimalsLoading(false);
                 }
             }
         }
@@ -30,7 +40,10 @@ export default function useTokenDecimals(mint: string) {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [mint]); // Add mint to dependency array
 
-    return decimal;
+    return {
+        decimal,
+        isDecimalsLoading
+    };
 }

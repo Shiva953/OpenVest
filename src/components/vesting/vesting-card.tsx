@@ -47,11 +47,22 @@ export default function VestingCard({ account }: { account: string }){
       [getVestingAccountStateQuery.data?.mint]
     );
 
-    let tokenDecimals = useTokenDecimals(tokenMint?.toString()!);
+    const { decimal: tokenDecimals, isDecimalsLoading } = useTokenDecimals(tokenMint?.toString() ?? 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
 
-      const startTime = useMemo(() => getUnixTimestamp(startDate!, startTiming), [startDate, startTiming]);
-      const endTime = useMemo(() => getUnixTimestamp(endDate!, endTiming), [endDate, endTiming]);
+    const startTime = getUnixTimestamp(startDate!, startTiming);
+    const endTime = getUnixTimestamp(endDate!, endTiming);
 
+    // if (isDecimalsLoading) {
+    //   return <div>Loading...</div>;
+    // }
+
+    if (getVestingAccountStateQuery.isLoading) {
+      return <div>Loading...</div>;
+    }
+
+    if (getVestingAccountStateQuery.isError) {
+      return <div>Error loading vesting account</div>;
+    }
 
     if(isLoading){
       return (
