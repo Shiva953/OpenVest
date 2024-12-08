@@ -5,7 +5,7 @@ import { AppHero } from '../ui/ui-layout'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { VestingCreate, VestingList } from './vesting-ui'
-import { AllocationList, CompanyList } from './employee-allocations-list'
+import { AllocationList } from './employee-allocations-list'
 import ConnectButton from '../solana/wallet-button'
 import { UnifiedWalletButton } from '@jup-ag/wallet-adapter'
 
@@ -74,7 +74,7 @@ export default function VestingFeature() {
       ></div>
       <div className='mt-8 mb--16'>
       <AppHero
-        title="EzVest"
+        title="VestX"
         subtitle={'Reward your project contributors with vested tokens!'}
       />
       </div>
