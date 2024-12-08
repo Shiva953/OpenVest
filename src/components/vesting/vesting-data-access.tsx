@@ -51,7 +51,7 @@ export function useVestingProgram() {
     mutationFn: async({ company_name, mint }: CreateVestingArgs) => {
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-      const txn_metadata = await axios.post("http://localhost:3000/api/createCompanyVesting", {
+      const txn_metadata = await axios.post("http://localhost:300/api/createCompanyVesting", {
         company_name: company_name,
         mint: mint,
         beneficiary: wallet.publicKey?.toString()!
