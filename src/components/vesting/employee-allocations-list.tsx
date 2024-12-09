@@ -8,8 +8,10 @@ import { ExternalLink } from 'lucide-react'
 import useTokenDecimals from '../../hooks/useTokenDecimals';
 import { formatDate, compressPublicKey } from '@/app/lib/utils';
 import { progressPercentageCalc } from '@/app/lib/utils';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 interface AllocationCardParamsT{
+  ownerOfVestingAccountForGivenEmployee: string,
   start_time: BN,
   end_time: BN,
   cliff: number,
@@ -24,6 +26,7 @@ interface AllocationCardParamsT{
 
 export function AllocationList(){
     const { getProgramAccount, employeeAccounts, employeeAccountsWithMetadata } = useVestingProgram();
+    const wallet = useWallet();
   
     if (getProgramAccount.isLoading) {
       return (
@@ -53,7 +56,9 @@ export function AllocationList(){
           ) : employeeAccountsWithMetadata?.data?.length ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {employeeAccountsWithMetadata.data?.map((a) => {
+
                 const acp:AllocationCardParamsT = {
+                  ownerOfVestingAccountForGivenEmployee: a.ownerOfVestingAccountForGivenEmployee || 'CUdHPZyyuMCzBJEgTZnoopxhp9zjp1pog3Tgx2jEKP7E',
                   start_time: a.start_time ?? new BN(0),
                   end_time: a.end_time ?? new BN(0),
                   cliff: a.cliff ?? 0,
@@ -65,12 +70,13 @@ export function AllocationList(){
                   companyName: a.companyName ?? "CompanyNotFound",
                   token_mint: a.token_mint ?? "6qPDRa1oso15ZxnyamLTt44TXSzBHnPqYCePAXFPuU6",
                 }
+                const check = a.ownerOfVestingAccountForGivenEmployee == wallet.publicKey?.toString();
                 return(
                 <div key={a.employeeAccount.toString()} className="transform transition-all duration-200 hover:scale-[1.02]">
-                  <AllocationCard 
+                  {check && <AllocationCard 
                   employeeAccount={a.employeeAccount.toBase58()}
                   allocationCardParams={acp} 
-                  />
+                  />}
                 </div>
                 )
               })}

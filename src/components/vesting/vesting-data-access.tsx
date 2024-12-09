@@ -69,6 +69,7 @@ export function useVestingProgram() {
         const x = a.account.vestingAccount;
         const employeeAccount = a.publicKey;
         const vestingAccountData = await program.account.vestingAccount.fetch(x, "confirmed");
+        const ownerOfVestingAccountForGivenEmployee = vestingAccountData.owner || new PublicKey('CUdHPZyyuMCzBJEgTZnoopxhp9zjp1pog3Tgx2jEKP7E');
         const mint = vestingAccountData.mint || new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
         const beneficiary = a.account.beneficiary || new PublicKey('CUdHPZyyuMCzBJEgTZnoopxhp9zjp1pog3Tgx2jEKP7E');
         const token_mint = mint.toString() || 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr';
@@ -84,6 +85,7 @@ export function useVestingProgram() {
         const actualWithdrawnAmount = Math.floor(withdrawn_amount?.toNumber() /(10**decimals));
         const obj = {
           employeeAccount: employeeAccount,
+          ownerOfVestingAccountForGivenEmployee: ownerOfVestingAccountForGivenEmployee.toString(),
           start_time: start_time,
           end_time: end_time,
           cliff: cliff,
