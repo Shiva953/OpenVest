@@ -14,6 +14,10 @@ import axios from "axios"
 import { CreateVestingArgs, CreateEmployeeArgs } from '@/types'
 import { BN } from "@coral-xyz/anchor"
 
+const endpoint = process.env.NODE_ENV === 'development' 
+      ? 'http://localhost:3000'
+      : 'https://vesting-dapp-five.vercel.app';
+
 //getting all the vesting accounts, program methods, and defining individual hooks for ops
 //useQuery for fetching Vesting Accounts associated with given programId, useMutation for creating vesting accounts/claiming tokens
 export function useVestingProgram() {
@@ -66,9 +70,9 @@ export function useVestingProgram() {
 
       const ecc = await program.account.employeeVestingAccount.all()
       const list = ecc.map(async(a) => {
-        const x = a.account.vestingAccount;
+        const associatedVestingAccount = a.account.vestingAccount;
         const employeeAccount = a.publicKey;
-        const vestingAccountData = await program.account.vestingAccount.fetch(x, "confirmed");
+        const vestingAccountData = await program.account.vestingAccount.fetch(associatedVestingAccount, "confirmed");
         const ownerOfVestingAccountForGivenEmployee = vestingAccountData.owner || new PublicKey('CUdHPZyyuMCzBJEgTZnoopxhp9zjp1pog3Tgx2jEKP7E');
         const mint = vestingAccountData.mint || new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
         const beneficiary = a.account.beneficiary || new PublicKey('CUdHPZyyuMCzBJEgTZnoopxhp9zjp1pog3Tgx2jEKP7E');
@@ -111,7 +115,18 @@ export function useVestingProgram() {
     mutationFn: async({ company_name, mint }: CreateVestingArgs) => {
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-      const txn_metadata = await axios.post("http://localhost:3000/api/createCompanyVesting", {
+      // const txn_metadata = await Promise.all(
+      //   endpoints.map(url => axios.post(url, {
+      //     company_name: company_name,
+      //     mint: mint,
+      //     beneficiary: wallet.publicKey?.toString()!
+      //   }, {
+      //     headers: {'Content-Type': 'application/json'}
+      //   }))
+      // );
+      const apiEndpoint = `${endpoint}/api/createCompanyVesting`
+
+      const txn_metadata = await axios.post(apiEndpoint, {
         company_name: company_name,
         mint: mint,
         beneficiary: wallet.publicKey?.toString()!
@@ -233,7 +248,8 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
     mutationKey: ['vesting', 'create_employee_vesting_account'],
     mutationFn: async({ start_time, end_time, total_allocation_amount, cliff, beneficiary }: CreateEmployeeArgs) => 
     {
-          const metadata = await axios.post("http://localhost:3000/api/createEmployeeVesting", {
+          const apiEndpoint = `${endpoint}/api/createEmployeeVesting`
+          const metadata = await axios.post(apiEndpoint, {
             start_time: start_time,
             end_time: end_time,
             total_allocation_amount: total_allocation_amount,

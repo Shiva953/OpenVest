@@ -70,7 +70,7 @@ export function AllocationList(){
                   companyName: a.companyName ?? "CompanyNotFound",
                   token_mint: a.token_mint ?? "6qPDRa1oso15ZxnyamLTt44TXSzBHnPqYCePAXFPuU6",
                 }
-                const check = a.ownerOfVestingAccountForGivenEmployee == wallet.publicKey?.toString();
+                const check = a.ownerOfVestingAccountForGivenEmployee == wallet.publicKey?.toString(); //employee accounts whose associated vesting account is owned by the connected wallet pubkey
                 return(
                 <div key={a.employeeAccount.toString()} className="transform transition-all duration-200 hover:scale-[1.02]">
                   {check && <AllocationCard 
@@ -286,14 +286,15 @@ export function AllocationCard({employeeAccount, allocationCardParams} : { emplo
           <span className="absolute inset-0 bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
         </span>
         <CardContent className="p-6 space-y-4">
-          <h2 className='mx-auto'>
-            <div className='flex flex-row mx-auto'>
+        <h2 className='mx-auto z-40'>
+            <div className='flex flex-row mx-auto items-center z-40'>
               Token allocation for{' '}
-            <span className='text-medium text-teal-400'>{compressPublicKey(beneficiary || 'yoben....') }</span>
-            <a 
-                  href={`https://solscan.io/address/${beneficiary}?cluster=devnet`} 
+              <span className='ml-2 text-medium text-teal-400 z-40'>{compressPublicKey(beneficiary || 'yoben....') }</span>
+              <a 
+                  href={beneficiary ? `https://solscan.io/address/${beneficiary}?cluster=devnet` : '#'} 
                   target="_blank" 
                   rel="noopener noreferrer" 
+                  className="ml-2 z-40"
                 >
                   <ExternalLink size={16} />
                 </a>
