@@ -1,18 +1,29 @@
 import { useVestingProgram, useVestingProgramAccount } from './vesting-data-access'
-import { useState, useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js'
+import { PublicKey } from '@solana/web3.js'
 import { BN } from "@coral-xyz/anchor"
 import { ExternalLink } from 'lucide-react'
 import useTokenDecimals from '../../hooks/useTokenDecimals';
-import { formatDate, compressPublicKey, getDecimalsAndSupplyToken, } from '@/app/lib/utils';
-import { getVestingProgram, getVestingProgramId } from '@project/anchor';
-import { ProgramAccount } from '@coral-xyz/anchor';
-import { useAnchorProvider } from '../solana/solana-provider';
+import { formatDate, compressPublicKey } from '@/app/lib/utils';
+import { progressPercentageCalc } from '@/app/lib/utils';
+
+interface AllocationCardParamsT{
+  start_time: BN,
+  end_time: BN,
+  cliff: number,
+  total_allocation_amount: BN,
+  withdrawn_amount: BN,
+  actualTotalAllocationAmount: number,
+  actualWithdrawnAmount: number,
+  beneficiary: string,
+  companyName: string,
+  token_mint: string
+}
 
 export function AllocationList(){
-    const { getProgramAccount, employeeAccounts } = useVestingProgram();
+    const { getProgramAccount, employeeAccounts, employeeAccountsWithMetadata } = useVestingProgram();
   
     if (getProgramAccount.isLoading) {
       return (
@@ -35,17 +46,34 @@ export function AllocationList(){
     return (
       <div className="px-4 -mt-4">
         <div className="max-w-7xl mx-auto rounded-xl shadow-sm p-4">
-          {employeeAccounts.isLoading ? (
+          {employeeAccountsWithMetadata.isLoading ? (
             <div className="flex justify-center items-center h-24">
               <span className="loading loading-spinner loading-lg" />
             </div>
-          ) : employeeAccounts.data?.length ? (
+          ) : employeeAccountsWithMetadata?.data?.length ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {employeeAccounts.data?.map((account) => (
-                <div key={account.publicKey.toString()} className="transform transition-all duration-200 hover:scale-[1.02]">
-                  <AllocationCard account={account.publicKey.toBase58()} />
+              {employeeAccountsWithMetadata.data?.map((a) => {
+                const acp:AllocationCardParamsT = {
+                  start_time: a.start_time ?? new BN(0),
+                  end_time: a.end_time ?? new BN(0),
+                  cliff: a.cliff ?? 0,
+                  total_allocation_amount: a.total_allocation_amount ?? new BN(0),
+                  withdrawn_amount: a.withdrawn_amount ?? new BN(0),
+                  actualTotalAllocationAmount: a.actualTotalAllocationAmount ?? 0,
+                  actualWithdrawnAmount: a.actualWithdrawnAmount ?? 0,
+                  beneficiary: a.beneficiary ?? 'CUdHPZyyuMCzBJEgTZnoopxhp9zjp1pog3Tgx2jEKP7E',
+                  companyName: a.companyName ?? "CompanyNotFound",
+                  token_mint: a.token_mint ?? "6qPDRa1oso15ZxnyamLTt44TXSzBHnPqYCePAXFPuU6",
+                }
+                return(
+                <div key={a.employeeAccount.toString()} className="transform transition-all duration-200 hover:scale-[1.02]">
+                  <AllocationCard 
+                  employeeAccount={a.employeeAccount.toBase58()}
+                  allocationCardParams={acp} 
+                  />
                 </div>
-              ))}
+                )
+              })}
             </div>
           ) : (
             <div className="text-center py-4">
@@ -60,75 +88,75 @@ export function AllocationList(){
     )
   }
 
-  export function CompanyList(){
-    const { getProgramAccount, vestingAccounts } = useVestingProgram()
-    const [selectedCompany, setSelectedCompany] = useState<{account: string, companyName: string} | null>(null);
+  // export function CompanyList(){
+  //   const { getProgramAccount, vestingAccounts } = useVestingProgram()
+  //   const [selectedCompany, setSelectedCompany] = useState<{account: string, companyName: string} | null>(null);
 
     
-    // Get unique companies
-    const uniqueCompanies = useMemo(() => {
-      const companyMap = new Map<string, {account: string, companyName: string}>();
-      vestingAccounts.data?.forEach((vestingAccount) => {
-        const companyName = vestingAccount.account.companyName ?? "Unknown Company";
-        if (!companyMap.has(companyName)) {
-          companyMap.set(companyName, {
-            account: vestingAccount.publicKey.toBase58(),
-            companyName: companyName
-          });
-        }
-      });
-      return Array.from(companyMap.values());
-    }, [vestingAccounts.data]);
+  //   // Get unique companies
+  //   const uniqueCompanies = useMemo(() => {
+  //     const companyMap = new Map<string, {account: string, companyName: string}>();
+  //     vestingAccounts.data?.forEach((vestingAccount) => {
+  //       const companyName = vestingAccount.account.companyName ?? "Unknown Company";
+  //       if (!companyMap.has(companyName)) {
+  //         companyMap.set(companyName, {
+  //           account: vestingAccount.publicKey.toBase58(),
+  //           companyName: companyName
+  //         });
+  //       }
+  //     });
+  //     return Array.from(companyMap.values());
+  //   }, [vestingAccounts.data]);
 
-    if (getProgramAccount.isLoading) {
-      return (
-        <div className="flex justify-center items-center h-24">
-          <span className="loading loading-spinner loading-lg" />
-        </div>
-      );
-    }
+  //   if (getProgramAccount.isLoading) {
+  //     return (
+  //       <div className="flex justify-center items-center h-24">
+  //         <span className="loading loading-spinner loading-lg" />
+  //       </div>
+  //     );
+  //   }
   
-    if (!getProgramAccount.data?.value) {
-      return (
-        <div className="flex justify-center p-2">
-          <div className="bg-blue-50 text-black px-4 py-2 rounded-lg max-w-2xl">
-            <span>Program account not found. Make sure you have deployed the program and are on the correct cluster.</span>
-          </div>
-        </div>
-      );
-    }
+  //   if (!getProgramAccount.data?.value) {
+  //     return (
+  //       <div className="flex justify-center p-2">
+  //         <div className="bg-blue-50 text-black px-4 py-2 rounded-lg max-w-2xl">
+  //           <span>Program account not found. Make sure you have deployed the program and are on the correct cluster.</span>
+  //         </div>
+  //       </div>
+  //     );
+  //   }
   
-    return(
-    <>
-    <div className="px-4 -mt-4">
-    <div className="max-w-7xl mx-auto rounded-xl shadow-sm p-4">
-    <div className='flex flex-col space-y-4'>
-      {uniqueCompanies.map((company) => (
-        <div 
-          key={company.companyName}
-          className="w-full bg-gray-800 hover:bg-gray-700 transition-colors duration-200 rounded-lg cursor-pointer"
-          onClick={() => setSelectedCompany(company)}
-        >
-          <div className="px-6 py-4 text-white text-lg font-semibold">
-            {company.companyName}
-          </div>
-        </div>
-      ))}
+  //   return(
+  //   <>
+  //   <div className="px-4 -mt-4">
+  //   <div className="max-w-7xl mx-auto rounded-xl shadow-sm p-4">
+  //   <div className='flex flex-col space-y-4'>
+  //     {uniqueCompanies.map((company) => (
+  //       <div 
+  //         key={company.companyName}
+  //         className="w-full bg-gray-800 hover:bg-gray-700 transition-colors duration-200 rounded-lg cursor-pointer"
+  //         onClick={() => setSelectedCompany(company)}
+  //       >
+  //         <div className="px-6 py-4 text-white text-lg font-semibold">
+  //           {company.companyName}
+  //         </div>
+  //       </div>
+  //     ))}
   
-      {selectedCompany && (
-        <div className="mt-6">
-          <EmployeeAllocationsListForGivenCompany 
-            account={selectedCompany.account}
-            company_name={selectedCompany.companyName} 
-          />
-        </div>
-      )}
-    </div>
-    </div>
-    </div>
-    </>
-    )
-  }
+  //     {selectedCompany && (
+  //       <div className="mt-6">
+  //         <EmployeeAllocationsListForGivenCompany 
+  //           account={selectedCompany.account}
+  //           company_name={selectedCompany.companyName} 
+  //         />
+  //       </div>
+  //     )}
+  //   </div>
+  //   </div>
+  //   </div>
+  //   </>
+  //   )
+  // }
 
   // export function CompanyList(){
   //   const { vestingAccounts } = useVestingProgram()
@@ -149,205 +177,100 @@ export function AllocationList(){
   //   )
   // }
 
-  const progressPercentageCalc = (total_allocation_amount: BN, withdrawn_amount: BN) => {
-    const totalAllocation = parseFloat(total_allocation_amount.toString());
-    const withdrawn = parseFloat(withdrawn_amount.toString());
-    return totalAllocation > 0 
-      ? Math.min((withdrawn / totalAllocation) * 100, 100) 
-      : 0;
-  };
-
-  export function EmployeeAllocationsListForGivenCompany({account, company_name} : {account: string, company_name: string}) {
-    const { employeeAccounts } = useVestingProgram();
-    const provider = useAnchorProvider()
-    const clusterNetwork = "devnet";
-    const program = getVestingProgram(provider)
+  // export function EmployeeAllocationsListForGivenCompany({account, company_name} : {account: string, company_name: string}) {
+  //   const { employeeAccounts } = useVestingProgram();
+  //   const provider = useAnchorProvider()
+  //   const clusterNetwork = "devnet";
+  //   const program = getVestingProgram(provider)
   
-    // Explicitly type the state with the correct type
-    const [filteredEmployeeAccounts, setFilteredEmployeeAccounts] = useState<ProgramAccount<{
-      beneficiary: PublicKey;
-      tokenAllocationAmount: BN;
-      withdrawnAmount: BN;
-      vestingAccount: PublicKey;
-      startTime: BN;
-      endTime: BN;
-      cliff: BN;
-      bump: number;
-    }>[]>([]);
+  //   // Explicitly type the state with the correct type
+  //   const [filteredEmployeeAccounts, setFilteredEmployeeAccounts] = useState<ProgramAccount<{
+  //     beneficiary: PublicKey;
+  //     tokenAllocationAmount: BN;
+  //     withdrawnAmount: BN;
+  //     vestingAccount: PublicKey;
+  //     startTime: BN;
+  //     endTime: BN;
+  //     cliff: BN;
+  //     bump: number;
+  //   }>[]>([]);
   
-    useEffect(() => {
-      const filterEmployeeAccounts = async () => {
-        if (!employeeAccounts.data) return;
+  //   useEffect(() => {
+  //     const filterEmployeeAccounts = async () => {
+  //       if (!employeeAccounts.data) return;
   
-        const filtered = await Promise.all(
-          employeeAccounts.data.map(async (employeeAccount) => {
-            try {
-              const getVestingAccountStateQuery = await program.account.vestingAccount.fetch(
-                employeeAccount.account.vestingAccount, 
-                "confirmed"
-              );
+  //       const filtered = await Promise.all(
+  //         employeeAccounts.data.map(async (employeeAccount) => {
+  //           try {
+  //             const getVestingAccountStateQuery = await program.account.vestingAccount.fetch(
+  //               employeeAccount.account.vestingAccount, 
+  //               "confirmed"
+  //             );
               
-              return getVestingAccountStateQuery.companyName === company_name 
-                ? employeeAccount 
-                : null;
-            } catch (error) {
-              console.error("Error fetching vesting account:", error);
-              return null;
-            }
-          })
-        );
+  //             return getVestingAccountStateQuery.companyName === company_name 
+  //               ? employeeAccount 
+  //               : null;
+  //           } catch (error) {
+  //             console.error("Error fetching vesting account:", error);
+  //             return null;
+  //           }
+  //         })
+  //       );
   
-        // Remove null values and set the state
-        setFilteredEmployeeAccounts(
-          filtered.filter((acc) => acc !== null)
-        );
-      };
+  //       // Remove null values and set the state
+  //       setFilteredEmployeeAccounts(
+  //         filtered.filter((acc) => acc !== null)
+  //       );
+  //     };
   
-      filterEmployeeAccounts();
-    }, [company_name, employeeAccounts.data, program.account.vestingAccount]);
+  //     filterEmployeeAccounts();
+  //   }, [company_name, employeeAccounts.data, program.account.vestingAccount]);
   
-    return (
-      <div className='flex flex-col'>
-        {filteredEmployeeAccounts.map((acc) => (
-              <div 
-                key={acc.publicKey.toString()} 
-                className="transform transition-all duration-200 hover:scale-[1.02]"
-              >
-                <AllocationCard account={acc.publicKey.toBase58()} />
-              </div>
-          )
-        )}
-      </div>
-    );
-  }
+  //   return (
+  //     <div className='flex flex-col'>
+  //       {filteredEmployeeAccounts.map((acc) => (
+  //             <div 
+  //               key={acc.publicKey.toString()} 
+  //               className="transform transition-all duration-200 hover:scale-[1.02]"
+  //             >
+  //               <AllocationCard account={acc.publicKey.toBase58()} />
+  //             </div>
+  //         )
+  //       )}
+  //     </div>
+  //   );
+  // }
   
-export function AllocationCard({account} : { account: string }){
-    // const { getEmployeeVestingAccountStateQuery, claimTokensMutation } = useVestingProgramAccount({account: new PublicKey(account)})
-    // // const { vestingAccounts } = useVestingProgram();
-    // // const connection = new Connection(clusterApiUrl("devnet"), "confirmed")
-    // // const [companyName, setCompanyName] = useState('')
-    // // const [token_mint, setMint] = useState<string>('')
-    // // const [decs, setDecs] = useState<number>(0);
-    // // const [actualTotalAllocAmt, setActualTotalAllocAmt] = useState(0)
-    // // const [actualWA, setActualWA] = useState(0)
+export function AllocationCard({employeeAccount, allocationCardParams} : { employeeAccount: string, allocationCardParams: AllocationCardParamsT }){
+  const employee = new PublicKey(employeeAccount);
+  const { claimTokensMutation } = useVestingProgramAccount({account: employee})
 
-    // const companyVestingAccount = useMemo(
-    //   () => getEmployeeVestingAccountStateQuery.data?.vestingAccount,
-    //   [getEmployeeVestingAccountStateQuery.data?.vestingAccount]
-    // );
+  const startTime = allocationCardParams.start_time;
+  const endTime = allocationCardParams.end_time;
+  
+  const cliff_period_in_mins = allocationCardParams.cliff;
 
-    // const { getVestingAccountStateQuery } = useVestingProgramAccount({account: companyVestingAccount!});
+  const company_name = allocationCardParams.companyName;
+  const token_mint = allocationCardParams.token_mint;
+  const total_allocation_amount = allocationCardParams.total_allocation_amount;
+  const withdrawn_amount = allocationCardParams.withdrawn_amount;
+  // const decimals = useTokenDecimals(tokenMint.toString())
 
-    // const allData = useMemo(
-    //   () => getEmployeeVestingAccountStateQuery.data,
-    //   [getEmployeeVestingAccountStateQuery.data]
-    // );
+  const actualTotalAllocationAmount = allocationCardParams.actualTotalAllocationAmount;
+  // const actualTotalAllocationAmount = Math.floor(total_allocation_amount?.toNumber() /(10**decimals));
+  // const actualWithdrawnAmount = Math.floor(withdrawn_amount?.toNumber() /(10**decimals));
+  const actualWithdrawnAmount = allocationCardParams.actualWithdrawnAmount;
+  const beneficiary = allocationCardParams.beneficiary;
 
-
-
-    //   const vestingAccountData = useMemo(
-    //   () => getVestingAccountStateQuery.data,
-    //   [getVestingAccountStateQuery.data])
-
-
-    //   const {decimal} = useTokenDecimals(tokenMint.toString())
-
-  // const { getEmployeeVestingAccountStateQuery, claimTokensMutation } = useVestingProgramAccount({ account: new PublicKey(account) });
-
-  // const companyVestingAccount = getEmployeeVestingAccountStateQuery.data?.vestingAccount;
-
-  // // Fetch company vesting account data only if companyVestingAccount exists
-  // const { getVestingAccountStateQuery } = useVestingProgramAccount({
-  //     account: companyVestingAccount!, 
-  // });
-
-  // const allData = getEmployeeVestingAccountStateQuery.data;
-  // const vestingAccountData = getVestingAccountStateQuery.data;
-
-
-  // const tokenMint = vestingAccountData?.mint ?? 
-  //     new PublicKey("Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr");
-      
-
-  //   const startTime = allData?.startTime || new BN(0)
-  //   const endTime = allData?.endTime || new BN(0);
-  //   const cliff_time = allData?.cliff || new BN(0)
-
-  //   const total_allocation_amount = getEmployeeVestingAccountStateQuery.data?.tokenAllocationAmount ?? new BN(0);
-
-  //   const cliff_period_in_mins = ((cliff_time.sub(startTime)).toNumber())/60;
-
-  //   const withdrawn_amount = getEmployeeVestingAccountStateQuery.data?.withdrawnAmount ?? new BN(0);
-
-
-  // const { decimal } = useTokenDecimals(tokenMint.toString());
-
-  // const token_mint = tokenMint?.toString();
-  // const company_name = vestingAccountData?.companyName ?? "Unknown company"
-
-  // const actualTotalAllocationAmount = Math.floor(total_allocation_amount?.toNumber() /(10**decimal));
-  // const actualWithdrawnAmount = Math.floor(withdrawn_amount?.toNumber() /(10**decimal));
-
-  const { 
-    getEmployeeVestingAccountStateQuery, 
-    getVestingAccountStateQuery, 
-    claimTokensMutation 
-  } = useVestingProgramAccount({ 
-    account: new PublicKey(account) 
-  });
-
-  // Memoize data fetching to prevent unnecessary re-renders
-  const allData = useMemo(() => 
-    getEmployeeVestingAccountStateQuery.data, 
-    [getEmployeeVestingAccountStateQuery.data]
-  );
-
-  const vestingAccountData = useMemo(() => 
-    getVestingAccountStateQuery.data, 
-    [getVestingAccountStateQuery.data]
-  );
-
-  // Safely handle undefined cases with default values
-  const tokenMint = vestingAccountData?.mint ?? 
-    new PublicKey("Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr");
-
-  const startTime = allData?.startTime || new BN(0);
-  const endTime = allData?.endTime || new BN(0);
-  const cliff_time = allData?.cliff || new BN(0);
-
-  // const total_allocation_amount = allData?.tokenAllocationAmount ?? new BN(0);
-  // const withdrawn_amount = allData?.withdrawnAmount ?? new BN(0);
-  const total_allocation_amount = useMemo(() => 
-    allData?.tokenAllocationAmount ?? new BN(0), 
-    [allData?.tokenAllocationAmount]
-  );
-
-  const withdrawn_amount = useMemo(() => 
-    allData?.withdrawnAmount ?? new BN(0), 
-    [allData?.withdrawnAmount]
-  );
-
-  // Use hooks conditionally and with memoization
-  const { decimal } = useTokenDecimals(tokenMint.toString());
-
-  const cliff_period_in_mins = ((cliff_time.sub(startTime)).toNumber())/60;
-
-  const token_mint = tokenMint?.toString();
-  const company_name = vestingAccountData?.companyName ?? "Unknown company";
-
-  const actualTotalAllocationAmount = Math.floor(
-    total_allocation_amount?.toNumber() / (10**decimal)
-  );
-  const actualWithdrawnAmount = Math.floor(
-    withdrawn_amount?.toNumber() / (10**decimal)
-  );
-  // const progressPercentage = progressPercentageCalc(total_allocation_amount, withdrawn_amount);
-
-  // Memoize progress percentage calculation
-  const progressPercentage = useMemo(() => 
-    progressPercentageCalc(total_allocation_amount, withdrawn_amount), 
-    [total_allocation_amount, withdrawn_amount]
-  );
+    // withdrawn amount progress bar
+    // const progressPercentage = useMemo(() => {
+    //   const totalAllocation = parseFloat(total_allocation_amount.toString());
+    //   const withdrawn = parseFloat(withdrawn_amount.toString());
+    //   return totalAllocation > 0 
+    //     ? Math.min((withdrawn / totalAllocation) * 100, 100) 
+    //     : 0;
+    // }, [total_allocation_amount, withdrawn_amount]);
+    const progressPercentage = progressPercentageCalc(total_allocation_amount, withdrawn_amount)
 
     const isClaimExpired = (Date.now()/1000) > endTime.toNumber();
   
@@ -360,9 +283,9 @@ export function AllocationCard({account} : { account: string }){
           <h2 className='mx-auto'>
             <div className='flex flex-row mx-auto'>
               Token allocation for{' '}
-            <span className='text-medium text-teal-400'>{compressPublicKey(allData?.beneficiary.toString() || 'yobenefwasnotdefinedforthis....') }</span>
+            <span className='text-medium text-teal-400'>{compressPublicKey(beneficiary || 'yoben....') }</span>
             <a 
-                  href={`https://solscan.io/address/${allData?.beneficiary.toString()}?cluster=devnet`} 
+                  href={`https://solscan.io/address/${beneficiary}?cluster=devnet`} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                 >
@@ -425,7 +348,6 @@ export function AllocationCard({account} : { account: string }){
             </div>
           </div>
 
-          {/* Withdrawn Tokens Progress Bar */}
           <div className="space-y-4 mt-4">
             <div className="flex justify-between text-sm text-gray-600 mt-8">
               <span className='mb--24 tracking-tight text-gray-300'>Unlocked Tokens</span>
@@ -440,7 +362,6 @@ export function AllocationCard({account} : { account: string }){
           </div>
         </CardContent>
         
-        {/* claim period expired check */}
         <CardFooter className="flex justify-center pb-6">
           {!isClaimExpired ? (
             <Button 

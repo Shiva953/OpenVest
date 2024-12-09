@@ -51,6 +51,14 @@ export const compressPublicKey = (key: string) => {
     return `${key.slice(0, 4)}…${key.slice(-4)}`;
 };
 
+export const progressPercentageCalc = (total_allocation_amount: BN, withdrawn_amount: BN) => {
+  const totalAllocation = parseFloat(total_allocation_amount.toString());
+  const withdrawn = parseFloat(withdrawn_amount.toString());
+  return totalAllocation > 0 
+    ? Math.min((withdrawn / totalAllocation) * 100, 100) 
+    : 0;
+};
+
 
 /**
    * Function to get token details

@@ -6,12 +6,13 @@ import {Connection, Cluster, clusterApiUrl, Keypair, PublicKey, Transaction} fro
 import {useMutation, useQuery} from '@tanstack/react-query'
 import {useMemo} from 'react'
 import { toast } from 'sonner'
-import { isBlockhashExpired } from '@/app/lib/utils'
+import { getDecimalsAndSupplyToken, isBlockhashExpired } from '@/app/lib/utils'
 import {useAnchorProvider} from '../solana/solana-provider'
 import { ExternalLink } from 'lucide-react'
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
 import axios from "axios"
 import { CreateVestingArgs, CreateEmployeeArgs } from '@/types'
+import { BN } from "@coral-xyz/anchor"
 
 //getting all the vesting accounts, program methods, and defining individual hooks for ops
 //useQuery for fetching Vesting Accounts associated with given programId, useMutation for creating vesting accounts/claiming tokens
@@ -42,6 +43,8 @@ export function useVestingProgram() {
     queryKey: ["vesting", "all", { cluster, walletPublicKey: wallet?.publicKey?.toString() }],
     queryFn: () => program.account.vestingAccount.all().then((accounts) => accounts.filter((acc) => acc.account.owner.toString() == wallet?.publicKey!.toString())),
     enabled: !!wallet?.publicKey, // Only run the query if wallet is connected
+    refetchOnMount: false,
+    refetchOnReconnect: false,
     refetchOnWindowFocus: false
   })
 
@@ -49,7 +52,56 @@ export function useVestingProgram() {
   const employeeAccounts = useQuery({
     queryKey: ['employeeVestingAccounts', {cluster}],
     queryFn: () => program.account.employeeVestingAccount.all(),
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
   })
+
+  const employeeAccountsWithMetadata = useQuery({
+    queryKey: ["getAllEmployeeMetadata", "fetch", "employeeVestingAccount", {cluster}],
+    queryFn: async() => {
+      // account = employeeAccount
+      // acc -> return arr[]<start date, end date, token mint, cliff, company name, total_allocation, withdrawn_amount>
+      // return an arr directly to the frontend instead of rendering this for each component
+
+      const ecc = await program.account.employeeVestingAccount.all()
+      const list = ecc.map(async(a) => {
+        const x = a.account.vestingAccount;
+        const employeeAccount = a.publicKey;
+        const vestingAccountData = await program.account.vestingAccount.fetch(x, "confirmed");
+        const mint = vestingAccountData.mint || new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
+        const beneficiary = a.account.beneficiary || new PublicKey('CUdHPZyyuMCzBJEgTZnoopxhp9zjp1pog3Tgx2jEKP7E');
+        const token_mint = mint.toString() || 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr';
+        const companyName = vestingAccountData.companyName || 'CompanyNotFound';
+        const total_allocation_amount = a.account.tokenAllocationAmount || 0;
+        const withdrawn_amount = a.account.withdrawnAmount || new BN(0);
+        const cliff_time = a.account.cliff || new BN(0);
+        const start_time = a.account.startTime || new BN(0);
+        const end_time = a.account.endTime || new BN(0);
+        const cliff = ((cliff_time.sub(start_time)).toNumber())/60;
+        const { decimals } = (await getDecimalsAndSupplyToken(new Connection(clusterApiUrl("devnet"), "confirmed"), token_mint)) || {supply: 0, decimals: 9}
+        const actualTotalAllocationAmount = Math.floor(total_allocation_amount?.toNumber() /(10**decimals));
+        const actualWithdrawnAmount = Math.floor(withdrawn_amount?.toNumber() /(10**decimals));
+        const obj = {
+          employeeAccount: employeeAccount,
+          start_time: start_time,
+          end_time: end_time,
+          cliff: cliff,
+          total_allocation_amount: total_allocation_amount,
+          withdrawn_amount: withdrawn_amount,
+          actualTotalAllocationAmount: actualTotalAllocationAmount,
+          actualWithdrawnAmount: actualWithdrawnAmount,
+          beneficiary: beneficiary.toString(),
+          companyName: companyName,
+          token_mint: token_mint,
+        }
+        return obj
+      })
+      const res = await Promise.all(list)
+      return res;
+    },
+  })
+
 
   // create vesting account TXN
   const createVestingAccountMutation = useMutation({
@@ -135,6 +187,7 @@ export function useVestingProgram() {
     getProgramAccount,
     vestingAccounts,
     employeeAccounts,
+    employeeAccountsWithMetadata,
     createVestingAccountMutation,
   }
   
@@ -149,17 +202,30 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
   const getVestingAccountStateQuery = useQuery({
     queryKey: ["vesting", "fetch", "vestingAccount", { cluster, account }],
     queryFn: () => program.account.vestingAccount.fetch(account, "confirmed",),
-    staleTime: 2 * 60 * 1000,
-    retry: 1
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
+  })
+
+  const getVestingAccountForGivenEmployeeAccount = useQuery({
+    queryKey: ['vestingAccountForGivenEmployee', { cluster, account }],
+    queryFn: async() => 
+      {
+        const acc = await program.account.employeeVestingAccount.fetch(account, "confirmed");
+        return program.account.vestingAccount.fetch(acc.vestingAccount, "confirmed")
+      },
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
   })
 
   const getEmployeeVestingAccountStateQuery = useQuery({
     queryKey: ["vesting", "fetch", "employeeVestingAccount", { cluster, account }],
-    queryFn: () => program.account.employeeVestingAccount.fetch(account, "confirmed",),
-    staleTime: 2 * 60 * 1000,
-    retry: 1
+    queryFn: () => program.account.employeeVestingAccount.fetch(account, "confirmed"),
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false
   })
-
 
   const createEmployeeAccountMutation = useMutation({
     mutationKey: ['vesting', 'create_employee_vesting_account'],
@@ -269,6 +335,7 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
 
   return {
     getVestingAccountStateQuery,
+    getVestingAccountForGivenEmployeeAccount,
     getEmployeeVestingAccountStateQuery,
     createEmployeeAccountMutation,
     claimTokensMutation

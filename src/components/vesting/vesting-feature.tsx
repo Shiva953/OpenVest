@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { VestingCreate, VestingList } from './vesting-ui'
 import { AllocationList } from './employee-allocations-list'
 import ConnectButton from '../solana/wallet-button'
-import { UnifiedWalletButton } from '@jup-ag/wallet-adapter'
+// import { UnifiedWalletButton } from '@jup-ag/wallet-adapter'
+import { WalletButton } from '../solana/solana-provider'
 
 export default function VestingFeature() {
   const { publicKey } = useWallet()
@@ -25,7 +26,7 @@ export default function VestingFeature() {
       {/* <WalletButton className='z-20 left-0 mt-4 ml-4 fixed'/> */}
       <nav className="container flex w-full items-center justify-between px-4 md:px-6 py-4 border-black border-opacity-10 bg-transparent">
       <div className="z-20 flex items-center gap-2">
-        <ConnectButton
+        <WalletButton
         // currentUserClassName="!focus:outline-none !hover:bg-blue-800 !focus:ring-4 !px-5 !py-3 !text-lg font-normal border border-black !border-opacity-[12%] !rounded-md h-16 w-42" 
         // buttonClassName="!text-white !bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-md px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-8 w-24" 
         />
@@ -80,8 +81,7 @@ export default function VestingFeature() {
       </div>
       <div className="hero pb-8 pt--8">
         <div className="hero-content text-center">
-          <UnifiedWalletButton
-           buttonClassName="!text-white !bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-12 w-42"/>
+          <WalletButton/>
         </div>
       </div>
     </div>

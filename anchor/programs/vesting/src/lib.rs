@@ -5,7 +5,7 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 use anchor_spl::token_interface;
 
-declare_id!("H9koFdC9FyMzhQLj9roL8yUpnwiAMdmm8aYPg2zrULJ8");
+declare_id!("7gsSaWgLxXx5Gb2Ai2BahVp6Aad1DpSKJTQCnjr1dK2o");
 
 #[program]
 pub mod vesting {

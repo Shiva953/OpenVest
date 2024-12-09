@@ -7,10 +7,13 @@ import {
   useConnection,
   useWallet,
   ConnectionProvider,
+  WalletProvider
 } from '@solana/wallet-adapter-react'
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets'
 import { ReactNode, useMemo } from 'react'
-import { JupiterWalletProvider } from './unified-wallet-provider'
+// import { JupiterWalletProvider } from './unified-wallet-provider'
 import { Cluster, clusterApiUrl } from '@solana/web3.js'
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 
 require('@solana/wallet-adapter-react-ui/styles.css')
 
@@ -22,15 +25,21 @@ export function SolanaProvider({ children }: { children: ReactNode }) {
   const cluster:Cluster  = "devnet"
   const endpoint = useMemo(() => clusterApiUrl(cluster), [cluster])
 
+  const wallets = useMemo(() => {
+    return [
+      new PhantomWalletAdapter(),
+    ];
+  }, []);
+
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <JupiterWalletProvider>
-      {/* <WalletProvider wallets={[]} onError={onError} autoConnect={true}>
-        <WalletModalProvider> */}
+      {/* <JupiterWalletProvider> */}
+      <WalletProvider wallets={wallets} autoConnect={true}>
+        <WalletModalProvider>
           {children}
-        </JupiterWalletProvider>
-          {/* </WalletModalProvider>
-      </WalletProvider> */}
+        {/* </JupiterWalletProvider> */}
+          </WalletModalProvider>
+      </WalletProvider>
     </ConnectionProvider>
   )
 }

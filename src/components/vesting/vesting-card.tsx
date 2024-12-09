@@ -1,6 +1,6 @@
 'use client'
 
-import { PublicKey, Connection } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { useVestingProgramAccount } from "./vesting-data-access"
 import { Card, CardTitle, CardHeader, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
@@ -25,38 +25,29 @@ export default function VestingCard({ account }: { account: string }){
     const { getVestingAccountStateQuery, createEmployeeAccountMutation } = useVestingProgramAccount({account: new PublicKey(account)})
     const [startDate, setStartDate] = useState<Date>();
     const [startTiming, setStartTiming] = useState('12:00');
+    const [beneficiary, setBeneficiary] = useState('')
     const [endDate, setEndDate] = useState<Date>();
     const [endTiming, setEndTiming] = useState('12:59');
     const [cliffTime, setCliffTime] = useState(400);
-    const [beneficiary, setBeneficiary] = useState('')
     const [totalAmount, setTotalAmount] = useState(100000);
 
     const {data, isLoading, isError} = getVestingAccountStateQuery;
 
+    //checking aptness of company name
     const companyName = useMemo(
-      () => getVestingAccountStateQuery.data?.companyName ?? "0",
-      [getVestingAccountStateQuery.data?.companyName]
-  );
+        () => getVestingAccountStateQuery.data?.companyName ?? "0",
+        [getVestingAccountStateQuery.data?.companyName]
+    );
 
     const tokenMint = useMemo(
       () => getVestingAccountStateQuery.data?.mint,
       [getVestingAccountStateQuery.data?.mint]
     );
 
-    let {decimal} = useTokenDecimals(tokenMint?.toString()!);
+      let tokenDecimals = useTokenDecimals(tokenMint?.toString()!);
 
-    //checking aptness of company name
-    // const companyName = getVestingAccountStateQuery.data?.companyName ?? "0";
-    // const tokenMint = getVestingAccountStateQuery.data?.mint ?? new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
-
-    // const { decimal: tokenDecimals, isDecimalsLoading } = useTokenDecimals(tokenMint?.toString() ?? 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
-
-    const startTime = getUnixTimestamp(startDate!, startTiming);
-    const endTime = getUnixTimestamp(endDate!, endTiming);
-
-    // if (isDecimalsLoading) {
-    //   return <div>Loading...</div>;
-    // }
+      const startTime = useMemo(() => getUnixTimestamp(startDate!, startTiming), [startDate, startTiming]);
+      const endTime = useMemo(() => getUnixTimestamp(endDate!, endTiming), [endDate, endTiming]);
 
     if (getVestingAccountStateQuery.isLoading) {
       return <div>Loading...</div>;
@@ -222,7 +213,7 @@ export default function VestingCard({ account }: { account: string }){
             onClick={() => createEmployeeAccountMutation.mutateAsync({
               start_time: startTime,
               end_time: endTime,
-              total_allocation_amount: totalAmount * (10**(decimal)),
+              total_allocation_amount: totalAmount * (10**(tokenDecimals)),
               cliff: cliffTime,
               beneficiary: beneficiary,
             })}
