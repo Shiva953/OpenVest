@@ -88,7 +88,5 @@ export async function getDecimalsAndSupplyToken(solanaConnection: Connection, to
     }
     const supply = decodedData.supply;
     const decimals = decodedData.decimals;
-    console.log(supply);
-    console.log(decimals);
-    return {  supply, decimals };
+    return { supply, decimals };
   }

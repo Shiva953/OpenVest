@@ -1,31 +1,98 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
+// import { getDecimalsAndSupplyToken } from "@/app/lib/utils";
+// import { clusterApiUrl, Connection } from "@solana/web3.js";
+
+// const connection = new Connection(clusterApiUrl("devnet"), "confirmed")
+
+// export default function useTokenDecimals(mint: string) {
+//     const [decimal, setDecimal] = useState(9);
+//     const [isDecimalsLoading, setisDecimalsLoading] = useState(true);
+
+//     useEffect(() => {
+//         // Only run effect if mint is truthy
+//         if (!mint) {
+//             setisDecimalsLoading(false);
+//             return;
+//         }
+
+//         let isMounted = true;
+//         async function getDecimals() {
+//             try {
+//                 setisDecimalsLoading(true);
+//                 const metadata = await getDecimalsAndSupplyToken(connection, mint);
+//                 if (isMounted) {
+//                     setDecimal(metadata?.decimals || 9);
+//                 }
+//             } catch (error) {
+//                 console.error("Failed to fetch token decimals", error);
+//                 // Set a default if fetch fails
+//                 if (isMounted) {
+//                     setDecimal(9);
+//                 }
+//             } finally {
+//                 if (isMounted) {
+//                     setisDecimalsLoading(false);
+//                 }
+//             }
+//         }
+
+//         getDecimals();
+//         return () => {
+//             isMounted = false;
+//         };
+//     }, [mint]); // Add mint to dependency array
+
+//     return {
+//         decimal,
+//         isDecimalsLoading
+//     };
+// }
+
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { getDecimalsAndSupplyToken } from "@/app/lib/utils";
 import { clusterApiUrl, Connection } from "@solana/web3.js";
 
-const connection = new Connection(clusterApiUrl("devnet"), "confirmed")
+// // Create a simple in-memory cache
+const tokenDecimalsCache = new Map<string, number>();
 
 export default function useTokenDecimals(mint: string) {
     const [decimal, setDecimal] = useState(9);
     const [isDecimalsLoading, setisDecimalsLoading] = useState(true);
 
+    const memoizedMint = useMemo(() => mint, [mint]);
+
     useEffect(() => {
-        // Only run effect if mint is truthy
-        if (!mint) {
+        // Skip if no mint or already in cache
+        if (!memoizedMint) {
             setisDecimalsLoading(false);
             return;
         }
 
+        // Check cache first
+        if (tokenDecimalsCache.has(memoizedMint)) {
+            setDecimal(tokenDecimalsCache.get(memoizedMint)!);
+            setisDecimalsLoading(false);
+            return;
+        }
+
+        const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
         let isMounted = true;
+
         async function getDecimals() {
             try {
                 setisDecimalsLoading(true);
-                const metadata = await getDecimalsAndSupplyToken(connection, mint);
+                const metadata = await getDecimalsAndSupplyToken(connection, memoizedMint);
+                
                 if (isMounted) {
-                    setDecimal(metadata?.decimals || 9);
+                    const decimals = metadata?.decimals || 9;
+                    
+                    // Cache the result
+                    tokenDecimalsCache.set(memoizedMint, decimals);
+                    
+                    setDecimal(decimals);
                 }
             } catch (error) {
                 console.error("Failed to fetch token decimals", error);
-                // Set a default if fetch fails
                 if (isMounted) {
                     setDecimal(9);
                 }
@@ -37,13 +104,71 @@ export default function useTokenDecimals(mint: string) {
         }
 
         getDecimals();
+
         return () => {
             isMounted = false;
         };
-    }, [mint]); // Add mint to dependency array
+    }, [memoizedMint]);
 
     return {
         decimal,
         isDecimalsLoading
     };
 }
+// export default function useTokenDecimals(mint: string) {
+//     const [decimal, setDecimal] = useState(9);
+//     const [isDecimalsLoading, setIsDecimalsLoading] = useState(true);
+
+//     // Use useCallback to memoize the mint
+//     const memoizedMint = useCallback(() => mint, [mint]);
+
+//     useEffect(() => {
+//         if (!mint) {
+//             setIsDecimalsLoading(false);
+//             return;
+//         }
+
+//         // Check cache first
+//         if (tokenDecimalsCache.has(mint)) {
+//             setDecimal(tokenDecimalsCache.get(mint)!);
+//             setIsDecimalsLoading(false);
+//             return;
+//         }
+
+//         const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+//         let isMounted = true;
+
+//         async function getDecimals() {
+//             try {
+//                 setIsDecimalsLoading(true);
+//                 const metadata = await getDecimalsAndSupplyToken(connection, mint);
+                
+//                 if (isMounted) {
+//                     const decimals = metadata?.decimals || 9;
+//                     tokenDecimalsCache.set(mint, decimals);
+//                     setDecimal(decimals);
+//                 }
+//             } catch (error) {
+//                 console.error("Failed to fetch token decimals", error);
+//                 if (isMounted) {
+//                     setDecimal(9);
+//                 }
+//             } finally {
+//                 if (isMounted) {
+//                     setIsDecimalsLoading(false);
+//                 }
+//             }
+//         }
+
+//         getDecimals();
+
+//         return () => {
+//             isMounted = false;
+//         };
+//     }, [mint]); // Directly depend on mint
+
+//     return {
+//         decimal,
+//         isDecimalsLoading
+//     };
+// }

@@ -34,9 +34,15 @@ export function useVestingProgram() {
   })
 
   // fetching all the vesting accounts associated with the program account
+  // const vestingAccounts = useQuery({
+  //   queryKey: ["vesting", "all", { cluster }],
+  //   queryFn: () => program.account.vestingAccount.all().then((accounts) => accounts.filter((acc) => acc.account.owner.toString() == wallet?.publicKey!.toString())),
+  // })
   const vestingAccounts = useQuery({
-    queryKey: ["vesting", "all", { cluster }],
+    queryKey: ["vesting", "all", { cluster, walletPublicKey: wallet?.publicKey?.toString() }],
     queryFn: () => program.account.vestingAccount.all().then((accounts) => accounts.filter((acc) => acc.account.owner.toString() == wallet?.publicKey!.toString())),
+    enabled: !!wallet?.publicKey, // Only run the query if wallet is connected
+    refetchOnWindowFocus: false
   })
 
   // fetching all the employee vesting accounts associated with the program + a vesting account above
@@ -51,7 +57,7 @@ export function useVestingProgram() {
     mutationFn: async({ company_name, mint }: CreateVestingArgs) => {
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-      const txn_metadata = await axios.post("http://localhost:300/api/createCompanyVesting", {
+      const txn_metadata = await axios.post("http://localhost:3000/api/createCompanyVesting", {
         company_name: company_name,
         mint: mint,
         beneficiary: wallet.publicKey?.toString()!

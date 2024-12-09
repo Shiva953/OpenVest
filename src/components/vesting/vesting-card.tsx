@@ -33,11 +33,23 @@ export default function VestingCard({ account }: { account: string }){
 
     const {data, isLoading, isError} = getVestingAccountStateQuery;
 
-    //checking aptness of company name
-    const companyName = getVestingAccountStateQuery.data?.companyName ?? "0";
-    const tokenMint = getVestingAccountStateQuery.data?.mint ?? new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
+    const companyName = useMemo(
+      () => getVestingAccountStateQuery.data?.companyName ?? "0",
+      [getVestingAccountStateQuery.data?.companyName]
+  );
 
-    const { decimal: tokenDecimals, isDecimalsLoading } = useTokenDecimals(tokenMint?.toString() ?? 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
+    const tokenMint = useMemo(
+      () => getVestingAccountStateQuery.data?.mint,
+      [getVestingAccountStateQuery.data?.mint]
+    );
+
+    let {decimal} = useTokenDecimals(tokenMint?.toString()!);
+
+    //checking aptness of company name
+    // const companyName = getVestingAccountStateQuery.data?.companyName ?? "0";
+    // const tokenMint = getVestingAccountStateQuery.data?.mint ?? new PublicKey('Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
+
+    // const { decimal: tokenDecimals, isDecimalsLoading } = useTokenDecimals(tokenMint?.toString() ?? 'Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr');
 
     const startTime = getUnixTimestamp(startDate!, startTiming);
     const endTime = getUnixTimestamp(endDate!, endTiming);
@@ -210,7 +222,7 @@ export default function VestingCard({ account }: { account: string }){
             onClick={() => createEmployeeAccountMutation.mutateAsync({
               start_time: startTime,
               end_time: endTime,
-              total_allocation_amount: totalAmount * (10**(tokenDecimals)),
+              total_allocation_amount: totalAmount * (10**(decimal)),
               cliff: cliffTime,
               beneficiary: beneficiary,
             })}
