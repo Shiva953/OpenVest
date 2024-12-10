@@ -7,7 +7,7 @@ import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 
 export const metadata = {
-  title: 'VestX',
+  title: 'OpenVest',
   description: 'Create Vesting Schedules for companies and their employees',
 }
 

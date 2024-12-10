@@ -29,7 +29,7 @@ export default function VestingFeature() {
       </div>
     </nav>
       <AppHero
-        title="VestX"
+        title="OpenVest"
         subtitle={'Create Token Vesting Schedules for companies and their employees'}
       >
         <VestingCreate />
@@ -70,7 +70,7 @@ export default function VestingFeature() {
       ></div>
       <div className='mt-8 mb--16'>
       <AppHero
-        title="VestX"
+        title="OpenVest"
         subtitle={'Reward your project contributors with vested tokens!'}
       />
       </div>

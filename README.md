@@ -1,4 +1,4 @@
-## VestX
+## OpenVest
 ### Vested Token Allocations for Employees
 
 ## Features
