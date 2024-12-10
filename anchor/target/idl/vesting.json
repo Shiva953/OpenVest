@@ -1,5 +1,5 @@
 {
-  "address": "7gsSaWgLxXx5Gb2Ai2BahVp6Aad1DpSKJTQCnjr1dK2o",
+  "address": "4hUjTX1c16Cibcnmoz5f1R437MN73YMoMz9E7VQbePSV",
   "metadata": {
     "name": "vesting",
     "version": "0.1.0",
@@ -185,7 +185,10 @@
         {
           "name": "owner",
           "writable": true,
-          "signer": true
+          "signer": true,
+          "relations": [
+            "vesting_account"
+          ]
         },
         {
           "name": "beneficiary"
@@ -251,6 +254,10 @@
         {
           "name": "cliff",
           "type": "i64"
+        },
+        {
+          "name": "benef",
+          "type": "pubkey"
         }
       ]
     },
@@ -379,6 +386,11 @@
       "code": 6002,
       "name": "NothingToClaim",
       "msg": "There is nothing to claim."
+    },
+    {
+      "code": 6003,
+      "name": "InvalidBeneficiary",
+      "msg": "Invalid Beneficiary Key Provided"
     }
   ],
   "types": [

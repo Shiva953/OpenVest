@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/vesting.json`.
  */
 export type Vesting = {
-  "address": "7gsSaWgLxXx5Gb2Ai2BahVp6Aad1DpSKJTQCnjr1dK2o",
+  "address": "4hUjTX1c16Cibcnmoz5f1R437MN73YMoMz9E7VQbePSV",
   "metadata": {
     "name": "vesting",
     "version": "0.1.0",
@@ -191,7 +191,10 @@ export type Vesting = {
         {
           "name": "owner",
           "writable": true,
-          "signer": true
+          "signer": true,
+          "relations": [
+            "vestingAccount"
+          ]
         },
         {
           "name": "beneficiary"
@@ -257,6 +260,10 @@ export type Vesting = {
         {
           "name": "cliff",
           "type": "i64"
+        },
+        {
+          "name": "benef",
+          "type": "pubkey"
         }
       ]
     },
@@ -385,6 +392,11 @@ export type Vesting = {
       "code": 6002,
       "name": "nothingToClaim",
       "msg": "There is nothing to claim."
+    },
+    {
+      "code": 6003,
+      "name": "invalidBeneficiary",
+      "msg": "Invalid Beneficiary Key Provided"
     }
   ],
   "types": [

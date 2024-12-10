@@ -5,7 +5,7 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 use anchor_spl::token_interface;
 
-declare_id!("7gsSaWgLxXx5Gb2Ai2BahVp6Aad1DpSKJTQCnjr1dK2o");
+declare_id!("4hUjTX1c16Cibcnmoz5f1R437MN73YMoMz9E7VQbePSV");
 
 #[program]
 pub mod vesting {
@@ -36,12 +36,18 @@ pub mod vesting {
         Ok(())
     }
 
-    pub fn create_employee_vesting(ctx: Context<CreateEmployeeVestingAccount>,start_time: i64, end_time: i64, token_allocation_amount: i64, cliff: i64) -> Result<()> {
+    pub fn create_employee_vesting(ctx: Context<CreateEmployeeVestingAccount>,start_time: i64, end_time: i64, token_allocation_amount: i64, cliff: i64, benef: Pubkey) -> Result<()> {
       // 1. ADD EMPLOYEE, INITIALIZE VESTING SCHEDULE + INITIALIZE EMPLOYEE TOKEN ACCOUNT
       // 2. TAKE START,END,CLIFF PERIOD AND TOKEN ALLOCATION FOR CREATING THE EMPLOYEE TOKEN ACCOUNT AND SETTING ITS STATE
       // 3. ENABLE FINALLY CREATING THE VESTING
+      // *ctx.accounts.beneficiary.key() = benef;
+
+      if ctx.accounts.beneficiary.key() != benef.key() {
+        return Err(ErrorCodeCustom::InvalidBeneficiary.into());
+      }
+
       *ctx.accounts.employee_vesting_account = EmployeeVestingAccount{
-        beneficiary: ctx.accounts.beneficiary.key(),
+        beneficiary: benef.key(),
         token_allocation_amount,
         withdrawn_amount: 0,
         vesting_account: ctx.accounts.vesting_account.key(),
@@ -184,15 +190,16 @@ pub struct CreateVestingAccount<'info> {
 }
 
 #[derive(Accounts)]
+// #[instruction(benef: Pubkey)]
 pub struct CreateEmployeeVestingAccount<'info> {
     #[account(mut)]
     pub owner: Signer<'info>,
     pub beneficiary: SystemAccount<'info>,
-    // #[account(has_one = owner)]
   //   #[account(
   //     // Add an explicit check to ensure the signer is the vesting account owner
   //     constraint = vesting_account.owner == owner.key()
   // )]
+    #[account(has_one = owner)]
     pub vesting_account: Account<'info, VestingAccount>,
     #[account(
         init,
@@ -282,4 +289,6 @@ pub enum ErrorCodeCustom {
     ClaimNotAvailableYet,
     #[msg("There is nothing to claim.")]
     NothingToClaim,
+    #[msg("Invalid Beneficiary Key Provided")]
+    InvalidBeneficiary,
 }
