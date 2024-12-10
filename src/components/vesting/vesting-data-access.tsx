@@ -16,7 +16,7 @@ import { BN } from "@coral-xyz/anchor"
 
 const endpoint = process.env.NODE_ENV === 'development' 
       ? 'http://localhost:3000'
-      : 'https://vesting-dapp-five.vercel.app';
+      : 'https://openvest.vercel.app';
 
 //getting all the vesting accounts, program methods, and defining individual hooks for ops
 //useQuery for fetching Vesting Accounts associated with given programId, useMutation for creating vesting accounts/claiming tokens
