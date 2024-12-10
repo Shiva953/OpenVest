@@ -26,7 +26,6 @@ export async function POST(req: Request) {
     const wall = { publicKey: beneficiaryPubKey } as anchor.Wallet;
     const provider = new AnchorProvider(connection, wall);
     
-    const programId = new PublicKey("7gsSaWgLxXx5Gb2Ai2BahVp6Aad1DpSKJTQCnjr1dK2o");
     anchor.setProvider(provider);
     // const program = anchor.workspace.Vesting as Program<Vesting>;
     const program = new Program<Vesting>(IDL as Vesting, provider);

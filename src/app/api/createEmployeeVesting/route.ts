@@ -25,12 +25,11 @@ export async function POST(req: Request) {
     const wall = { publicKey: beneficiaryPubKey } as anchor.Wallet;
     const provider = new AnchorProvider(connection, wall);
     
-    const programId = new PublicKey("7gsSaWgLxXx5Gb2Ai2BahVp6Aad1DpSKJTQCnjr1dK2o");
     anchor.setProvider(provider);
     const program = new Program<Vesting>(IDL as Vesting, provider);
 
-    const ixn = await program.methods.createEmployeeVesting(new BN(start_time), new BN(end_time), new BN(total_allocation_amount), new BN(cliff))
-    .accounts({ 
+    const ixn = await program.methods.createEmployeeVesting(new BN(start_time), new BN(end_time), new BN(total_allocation_amount), new BN(cliff), beneficiaryPubKey)
+    .accounts({
         beneficiary: new PublicKey(beneficiary),
         vestingAccount: new PublicKey(account),
        })
