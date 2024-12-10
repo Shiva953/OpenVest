@@ -185,10 +185,7 @@
         {
           "name": "owner",
           "writable": true,
-          "signer": true,
-          "relations": [
-            "vesting_account"
-          ]
+          "signer": true
         },
         {
           "name": "beneficiary"

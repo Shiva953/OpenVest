@@ -6,8 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { VestingCreate, VestingList } from './vesting-ui'
 import { AllocationList } from './employee-allocations-list'
-import ConnectButton from '../solana/wallet-button'
-// import { UnifiedWalletButton } from '@jup-ag/wallet-adapter'
 import { WalletButton } from '../solana/solana-provider'
 
 export default function VestingFeature() {
@@ -22,8 +20,6 @@ export default function VestingFeature() {
                     bg-gradient-to-r from-teal-300/50 via-cyan-400/40 to-green-300/30 
                     blur-[110px]"
       ></div>
-      {/* animate-pulse */}
-      {/* <WalletButton className='z-20 left-0 mt-4 ml-4 fixed'/> */}
       <nav className="container flex w-full items-center justify-between px-4 md:px-6 py-4 border-black border-opacity-10 bg-transparent">
       <div className="z-20 flex items-center gap-2">
         <WalletButton
@@ -32,7 +28,6 @@ export default function VestingFeature() {
         />
       </div>
     </nav>
-      {/* <ConnectButton/> */}
       <AppHero
         title="VestX"
         subtitle={'Create Token Vesting Schedules for companies and their employees'}

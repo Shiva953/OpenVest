@@ -17,7 +17,6 @@ import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { TimeInput } from "@nextui-org/date-input";
-import { useConnection } from "@solana/wallet-adapter-react";
 import useTokenDecimals from "../../hooks/useTokenDecimals";
 import { getUnixTimestamp, cliffPeriodToCliffTime } from "@/app/lib/utils"
 

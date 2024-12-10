@@ -22,14 +22,11 @@ export const dateToUnixTimestamp = (date: Date | undefined): number => {
 
 export const getUnixTimestamp = (startDate: Date, startTiming: string) => {
     if (!startDate || !startTiming) return 0;
-    // Parse the time string (HH:mm)
     const [hours, minutes] = startTiming.split(':').map(Number);
-    // Create a date object with the selected date and time
     const combinedDateTime = setMinutes(
       setHours(startDate, hours), 
       minutes
     );
-    // Convert to Unix timestamp (seconds)
     return Math.floor(getTime(combinedDateTime) / 1000);
 };
 

@@ -1,5 +1,4 @@
 import { useVestingProgram, useVestingProgramAccount } from './vesting-data-access'
-import { useMemo } from 'react'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { PublicKey } from '@solana/web3.js'
@@ -73,7 +72,7 @@ export function AllocationList(){
                 const check = a.ownerOfVestingAccountForGivenEmployee == wallet.publicKey?.toString(); //employee accounts whose associated vesting account is owned by the connected wallet pubkey
                 return(
                 <div key={a.employeeAccount.toString()} className="transform transition-all duration-200 hover:scale-[1.02]">
-                  {check && <AllocationCard 
+                  {<AllocationCard 
                   employeeAccount={a.employeeAccount.toBase58()}
                   allocationCardParams={acp} 
                   />}

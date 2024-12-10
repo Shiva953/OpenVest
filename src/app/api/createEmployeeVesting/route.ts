@@ -48,8 +48,6 @@ export async function POST(req: Request) {
       requireAllSignatures: false,
       verifySignatures: false
     }).toString('base64')
-
-    console.log("Employee Vesting Account Tx signature: ", serializedTx);
     
     return NextResponse.json(
       { 

@@ -39,10 +39,6 @@ export function useVestingProgram() {
   })
 
   // fetching all the vesting accounts associated with the program account
-  // const vestingAccounts = useQuery({
-  //   queryKey: ["vesting", "all", { cluster }],
-  //   queryFn: () => program.account.vestingAccount.all().then((accounts) => accounts.filter((acc) => acc.account.owner.toString() == wallet?.publicKey!.toString())),
-  // })
   const vestingAccounts = useQuery({
     queryKey: ["vesting", "all", { cluster, walletPublicKey: wallet?.publicKey?.toString() }],
     queryFn: () => program.account.vestingAccount.all().then((accounts) => accounts.filter((acc) => acc.account.owner.toString() == wallet?.publicKey!.toString())),
@@ -67,7 +63,6 @@ export function useVestingProgram() {
       // account = employeeAccount
       // acc -> return arr[]<start date, end date, token mint, cliff, company name, total_allocation, withdrawn_amount>
       // return an arr directly to the frontend instead of rendering this for each component
-
       const ecc = await program.account.employeeVestingAccount.all()
       const list = ecc.map(async(a) => {
         const associatedVestingAccount = a.account.vestingAccount;
@@ -115,15 +110,6 @@ export function useVestingProgram() {
     mutationFn: async({ company_name, mint }: CreateVestingArgs) => {
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-      // const txn_metadata = await Promise.all(
-      //   endpoints.map(url => axios.post(url, {
-      //     company_name: company_name,
-      //     mint: mint,
-      //     beneficiary: wallet.publicKey?.toString()!
-      //   }, {
-      //     headers: {'Content-Type': 'application/json'}
-      //   }))
-      // );
       const apiEndpoint = `${endpoint}/api/createCompanyVesting`
 
       const txn_metadata = await axios.post(apiEndpoint, {
@@ -133,7 +119,6 @@ export function useVestingProgram() {
       }, {
         headers: {'Content-Type': 'application/json'},
       })
-      console.log(txn_metadata)
       const tx = Transaction.from(Buffer.from(txn_metadata.data.tx, 'base64'));
 
       const {
@@ -147,8 +132,6 @@ export function useVestingProgram() {
           { blockhash, lastValidBlockHeight, signature },
           "confirmed"
         );
-
-        console.log("Confirming transaction...");
         toast.info("Confirming Transaction...")
 
         // continuous checking for txn confirmation
@@ -196,7 +179,6 @@ export function useVestingProgram() {
     },
     onError: () => toast.error("Failed to initialize vesting account"),
   })
-
 
   return {
     program,
@@ -272,7 +254,6 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
               "confirmed"
             );
 
-            console.log("Confirming transaction...");
             toast.info("Confirming Transaction...")
 
             let hashExpired = false;

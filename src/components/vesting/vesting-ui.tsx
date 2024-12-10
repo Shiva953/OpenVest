@@ -17,12 +17,6 @@ export function VestingCreate() {
   
   return (
     <main className="container relative bg-white w-full py-8 pb-8 px-32 mt--32 rounded-3xl flex justify-center">
-      {/* // before:absolute before:inset-1 before:-z-10 
-      // before:bg-blue-500/25 
-      // before:blur-0 
-      // before:rounded-[1.5rem] 
-      // before:animate-pulse-soft
-      // before:shadow-[0_0_40px_10px_rgba(59,130,246,0.6)]"> */}
       <div className="space-y-8 w-full max-w-3xl">
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="company" className="text-right text-base text-black">

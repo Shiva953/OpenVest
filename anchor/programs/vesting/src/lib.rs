@@ -41,7 +41,7 @@ pub mod vesting {
       // 2. TAKE START,END,CLIFF PERIOD AND TOKEN ALLOCATION FOR CREATING THE EMPLOYEE TOKEN ACCOUNT AND SETTING ITS STATE
       // 3. ENABLE FINALLY CREATING THE VESTING
       *ctx.accounts.employee_vesting_account = EmployeeVestingAccount{
-        beneficiary: *ctx.accounts.beneficiary.key,
+        beneficiary: ctx.accounts.beneficiary.key(),
         token_allocation_amount,
         withdrawn_amount: 0,
         vesting_account: ctx.accounts.vesting_account.key(),
@@ -188,7 +188,11 @@ pub struct CreateEmployeeVestingAccount<'info> {
     #[account(mut)]
     pub owner: Signer<'info>,
     pub beneficiary: SystemAccount<'info>,
-    #[account(has_one = owner)]
+    // #[account(has_one = owner)]
+  //   #[account(
+  //     // Add an explicit check to ensure the signer is the vesting account owner
+  //     constraint = vesting_account.owner == owner.key()
+  // )]
     pub vesting_account: Account<'info, VestingAccount>,
     #[account(
         init,

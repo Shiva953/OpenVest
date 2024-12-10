@@ -69,8 +69,6 @@ export async function POST(req: Request) {
       requireAllSignatures: false,
       verifySignatures: false
     }).toString('base64')
-
-    console.log("Successful transaction: ", serializedTx);
     
     return NextResponse.json(
       { 

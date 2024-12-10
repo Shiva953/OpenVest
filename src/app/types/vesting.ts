@@ -29,7 +29,7 @@ export type Vesting = {
         {
           "name": "beneficiary",
           "writable": true,
-          "signer": true,
+          "signer": false,
           "relations": [
             "employeeVestingAccount"
           ]
@@ -191,10 +191,7 @@ export type Vesting = {
         {
           "name": "owner",
           "writable": true,
-          "signer": true,
-          "relations": [
-            "vestingAccount"
-          ]
+          "signer": true
         },
         {
           "name": "beneficiary"
@@ -491,7 +488,7 @@ export const IDL = {
         {
           "name": "beneficiary",
           "writable": true,
-          "signer": true,
+          "signer": false,
           "relations": [
             "employee_vesting_account"
           ]
@@ -653,10 +650,7 @@ export const IDL = {
         {
           "name": "owner",
           "writable": true,
-          "signer": true,
-          "relations": [
-            "vesting_account"
-          ]
+          "signer": true
         },
         {
           "name": "beneficiary"

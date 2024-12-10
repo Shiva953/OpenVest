@@ -144,7 +144,7 @@ export default function useTokenDecimals(mint: string) {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [mint]);
 
     return decimal;
 }

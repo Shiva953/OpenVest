@@ -191,10 +191,7 @@ export type Vesting = {
         {
           "name": "owner",
           "writable": true,
-          "signer": true,
-          "relations": [
-            "vestingAccount"
-          ]
+          "signer": true
         },
         {
           "name": "beneficiary"
