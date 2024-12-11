@@ -121,11 +121,11 @@ export function AppHero({
           : title}
           {typeof subtitle === 'string' ? 
             <p className="
-              text-1.5xl 
+              text-1xl
               pb-12 
               mt--8 
-              tracking-wide 
-              italic 
+              tracking-tight 
+              opacity-70 
               drop-shadow-md 
               text-shadow-sm
             ">{subtitle}</p> 
