@@ -106,29 +106,18 @@ export function AppHero({
   subtitle: ReactNode
 }) {
   return (
-    <div className="hero shadow-2xl rounded-2xl overflow-hidden">
-    <div className="hero-content text-center">
-    <div className="max-w-2xl">
+    <div className="hero pb-16">
+      <div className="hero-content text-center">
+        <div className="max-w-3xl">
           {typeof title === 'string' ? 
-            <h1 className={`
-              text-7xl 
-              mb--8 
-              tracking-tighter 
-              font-semibold 
-              drop-shadow-lg 
-              text-shadow-md
-            `}>{title}</h1> 
+            <h1 className="text-6xl md:text-7xl mb-2 font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">
+              {title}
+            </h1> 
           : title}
           {typeof subtitle === 'string' ? 
-            <p className="
-              text-1xl
-              pb-12 
-              mt--8 
-              tracking-tight 
-              opacity-70 
-              drop-shadow-md 
-              text-shadow-sm
-            ">{subtitle}</p> 
+            <p className="text-xl mb-8 tracking-tight text-white opacity-60 drop-shadow-md text-shadow-md">
+              {subtitle}
+            </p> 
           : subtitle}
           {children}
         </div>
@@ -147,12 +136,12 @@ export function ellipsify(str = '', len = 4) {
 export function useTransactionToast() {
   return (signature: string) => {
     toast.success(
-      <div className="rounded-lg shadow-lg p-4 max-w-sm w-full">
+      <div className="rounded-lg shadow-lg p-4 max-w-sm w-full bg-gray-800 border border-gray-700">
         <div className="space-y-3">
           <div className="flex justify-center">
-            <div className="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+            <div className="h-12 w-12 bg-green-900/30 rounded-full flex items-center justify-center">
               <svg
-                className="h-6 w-6 text-green-600 dark:text-green-400"
+                className="h-6 w-6 text-green-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -167,7 +156,7 @@ export function useTransactionToast() {
             </div>
           </div>
           <div className="text-center">
-            <h3 className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+            <h3 className="text-sm font-medium text-gray-100">
               Transaction Sent
             </h3>
           </div>
@@ -175,7 +164,7 @@ export function useTransactionToast() {
             href={`https://explorer.solana.com/tx/${signature}?cluster=devnet`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 text-sm font-medium rounded-md transition-colors duration-200"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 text-sm font-medium rounded-md transition-colors duration-200"
           >
             View Transaction
             <ExternalLink className="h-4 w-4" />

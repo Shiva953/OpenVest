@@ -12,30 +12,28 @@ export default function VestingFeature() {
   const { publicKey } = useWallet()
 
   return publicKey ? (
-    <div className="flex flex-col w-full bg-grid-white/[0.1]">
-      <div className="z--20 absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+    <div className="flex flex-col z-40 w-full min-h-screen mt--16 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none"></div>
+      <div className="absolute inset-0 flex items-center justify-center bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
       <div 
-        className="z--10 absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                    w-96 h-72 rounded-full 
-                    bg-gradient-to-r from-teal-300/50 via-cyan-400/40 to-green-300/30 
-                    blur-[110px]"
+        className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+                    w-[30rem] h-[20rem] rounded-full 
+                    bg-gradient-to-r from-blue-500/30 via-cyan-400/20 to-teal-300/10 
+                    blur-[8rem] opacity-70"
       ></div>
-      <nav className="container flex w-full items-center justify-between px-4 md:px-6 py-4 border-black border-opacity-10 bg-transparent">
-      <div className="z-20 flex items-center gap-2">
-        <WalletButton
-        // currentUserClassName="!focus:outline-none !hover:bg-blue-800 !focus:ring-4 !px-5 !py-3 !text-lg font-normal border border-black !border-opacity-[12%] !rounded-md h-16 w-42" 
-        // buttonClassName="!text-white !bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-md px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 h-8 w-24" 
-        />
-      </div>
-    </nav>
+      <nav className="container flex w-full items-center justify-between px-4 md:px-6 py-6 bg-transparent z-10">
+        <div className="flex items-center gap-2">
+          <WalletButton className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200" />
+        </div>
+      </nav>
       <AppHero
         title="OpenVest"
-        subtitle={'Create Token Vesting Schedules for companies and their employees'}
+        subtitle="Create Token Vesting Schedules for companies and their employees"
       >
         <VestingCreate />
       </AppHero>
 
-      <div className="w-full px-4 md:px-6 lg:px-8 mt-8">
+      <div className="w-full px-4 md:px-6 lg:px-8 z-10">
         <Tabs defaultValue="vesting" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="vesting">Vesting Accounts</TabsTrigger>
@@ -60,24 +58,23 @@ export default function VestingFeature() {
       </div>
     </div>
   ) : (
-    <div className="bg-grid-white/[0.2] w-full h-[100vh]">
-      <div className="z--20 absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+    <div className="bg-gradient-to-b from-gray-900 to-black w-full min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none"></div>
+      <div className="absolute inset-0 flex items-center justify-center bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
       <div 
-        className="z--10 absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-                    w-72 h-72 rounded-full 
-                    bg-gradient-to-r from-teal-300/50 via-cyan-400/40 to-green-300/30 
-                    blur-[110px]"
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+                    w-[30rem] h-[30rem] rounded-full 
+                    bg-gradient-to-r from-blue-500/30 via-cyan-400/20 to-teal-300/10 
+                    blur-[8rem] opacity-70"
       ></div>
-      <div className='mt-8 mb--16'>
-      <AppHero
-        title="OpenVest"
-        subtitle={'Reward your project contributors with vested tokens!'}
-      />
+      <div className='z-10 text-center mb-12'>
+        <AppHero
+          title="OpenVest"
+          subtitle="Reward your project contributors with vested tokens!"
+        />
       </div>
-      <div className="hero pb-8 pt--8">
-        <div className="hero-content text-center">
-          <WalletButton/>
-        </div>
+      <div className="z-10">
+        <WalletButton className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-200" />
       </div>
     </div>
   )
