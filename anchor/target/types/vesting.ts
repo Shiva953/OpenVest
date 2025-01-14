@@ -197,7 +197,8 @@ export type Vesting = {
           ]
         },
         {
-          "name": "beneficiary"
+          "name": "beneficiary",
+          "writable": true
         },
         {
           "name": "vestingAccount"
@@ -260,10 +261,6 @@ export type Vesting = {
         {
           "name": "cliff",
           "type": "i64"
-        },
-        {
-          "name": "benef",
-          "type": "pubkey"
         }
       ]
     },

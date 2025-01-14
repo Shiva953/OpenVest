@@ -191,7 +191,8 @@
           ]
         },
         {
-          "name": "beneficiary"
+          "name": "beneficiary",
+          "writable": true
         },
         {
           "name": "vesting_account"
@@ -254,10 +255,6 @@
         {
           "name": "cliff",
           "type": "i64"
-        },
-        {
-          "name": "benef",
-          "type": "pubkey"
         }
       ]
     },

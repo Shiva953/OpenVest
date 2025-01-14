@@ -36,18 +36,18 @@ pub mod vesting {
         Ok(())
     }
 
-    pub fn create_employee_vesting(ctx: Context<CreateEmployeeVestingAccount>,start_time: i64, end_time: i64, token_allocation_amount: i64, cliff: i64, benef: Pubkey) -> Result<()> {
+    pub fn create_employee_vesting(ctx: Context<CreateEmployeeVestingAccount>,start_time: i64, end_time: i64, token_allocation_amount: i64, cliff: i64) -> Result<()> {
       // 1. ADD EMPLOYEE, INITIALIZE VESTING SCHEDULE + INITIALIZE EMPLOYEE TOKEN ACCOUNT
       // 2. TAKE START,END,CLIFF PERIOD AND TOKEN ALLOCATION FOR CREATING THE EMPLOYEE TOKEN ACCOUNT AND SETTING ITS STATE
       // 3. ENABLE FINALLY CREATING THE VESTING
       // *ctx.accounts.beneficiary.key() = benef;
 
-      if ctx.accounts.beneficiary.key() != benef.key() {
-        return Err(ErrorCodeCustom::InvalidBeneficiary.into());
-      }
+      // if ctx.accounts.beneficiary.key() != benef.key() {
+      //   return Err(ErrorCodeCustom::InvalidBeneficiary.into());
+      // }
 
       *ctx.accounts.employee_vesting_account = EmployeeVestingAccount{
-        beneficiary: benef.key(),
+        beneficiary: ctx.accounts.beneficiary.key(),
         token_allocation_amount,
         withdrawn_amount: 0,
         vesting_account: ctx.accounts.vesting_account.key(),
@@ -194,11 +194,11 @@ pub struct CreateVestingAccount<'info> {
 pub struct CreateEmployeeVestingAccount<'info> {
     #[account(mut)]
     pub owner: Signer<'info>,
-    pub beneficiary: SystemAccount<'info>,
-  //   #[account(
-  //     // Add an explicit check to ensure the signer is the vesting account owner
-  //     constraint = vesting_account.owner == owner.key()
-  // )]
+
+    /// CHECK: Safe because we're just using it as a destination
+    #[account(mut)]
+    pub beneficiary: UncheckedAccount<'info>,
+
     #[account(has_one = owner)]
     pub vesting_account: Account<'info, VestingAccount>,
     #[account(

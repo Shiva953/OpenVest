@@ -145,9 +145,9 @@ describe("Vesting Smart Contract Tests", () => {
 
   it("should create an employee vesting account", async () => {
     const tx2 = await program.methods
-      .createEmployeeVesting(new BN(0), new BN(2000), new BN(100), new BN(500), beneficiary.publicKey)
+      .createEmployeeVesting(new BN(0), new BN(2000), new BN(100), new BN(500))
       .accounts({
-        beneficiary: beneficiary.publicKey,
+        beneficiary: new PublicKey(""),
         vestingAccount: vestingAccountKey,
       })
       .rpc({ commitment: "confirmed", skipPreflight: true });
