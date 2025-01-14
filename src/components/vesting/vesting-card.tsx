@@ -20,6 +20,8 @@ import { TimeInput } from "@nextui-org/date-input";
 import useTokenDecimals from "../../hooks/useTokenDecimals";
 import { getUnixTimestamp, cliffPeriodToCliffTime } from "@/app/lib/utils"
 
+//move to mainnet, add jupiter tokens list
+
 export default function VestingCard({ account }: { account: string }){
     const { getVestingAccountStateQuery, createEmployeeAccountMutation } = useVestingProgramAccount({account: new PublicKey(account)})
     const [startDate, setStartDate] = useState<Date>();

@@ -197,7 +197,8 @@ export type Vesting = {
           ]
         },
         {
-          "name": "beneficiary"
+          "name": "beneficiary",
+          "writable": true
         },
         {
           "name": "vestingAccount"
@@ -260,10 +261,6 @@ export type Vesting = {
         {
           "name": "cliff",
           "type": "i64"
-        },
-        {
-          "name": "benef",
-          "type": "pubkey"
         }
       ]
     },
@@ -668,7 +665,8 @@ export const IDL = {
           ]
         },
         {
-          "name": "beneficiary"
+          "name": "beneficiary",
+          "writable": true
         },
         {
           "name": "vesting_account"
@@ -731,10 +729,6 @@ export const IDL = {
         {
           "name": "cliff",
           "type": "i64"
-        },
-        {
-          "name": "benef",
-          "type": "pubkey"
         }
       ]
     },

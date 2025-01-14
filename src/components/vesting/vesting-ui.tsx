@@ -13,10 +13,11 @@ import { ExternalLink } from 'lucide-react'
 export function VestingCreate() {
   const [newCompany, setNewCompany] = useState('')
   const [newMintAddress, setNewMintAddress] = useState('');
+  const [treasuryAmount, setTreasuryAmount] = useState('');
   const {createVestingAccountMutation} = useVestingProgram();
   
   return (
-    <main className="container relative bg-white w-full py-8 pb-8 px-32 mt--32 rounded-3xl flex justify-center">
+    <main className="container relative bg-white w-full py-8 pb-8 px-32 rounded-3xl flex justify-center">
       <div className="space-y-8 w-full max-w-3xl">
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="company" className="text-right text-base text-black">
@@ -26,30 +27,12 @@ export function VestingCreate() {
             id="company"
             value={newCompany}
             onChange={(e) => setNewCompany(e.target.value)}
-            className="
-              col-span-3 
-              rounded-full 
-              h-[3.5rem] 
-              w-full 
-              px-4 
-              py-3 
-              text-base 
-              sm:text-sm 
-              md:text-base 
-              lg:text-lg 
-              xl:text-xl 
-              border 
-              border-gray-300 
-              focus:border-blue-500 
-              focus:ring-2 
-              focus:ring-blue-200 
-              transition-all 
-              duration-300
-            "
+            className="col-span-3 rounded-full h-14 w-full px-4 py-3 text-base border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
             placeholder="Company Name"
             autoComplete="off"
           />
         </div>
+        
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="mintAddress" className="text-right text-base text-black">
             Token Mint
@@ -58,42 +41,39 @@ export function VestingCreate() {
             id="mintAddress"
             value={newMintAddress}
             onChange={(e) => setNewMintAddress(e.target.value)}
-            className="
-              col-span-3 
-              rounded-full 
-              h-[3.5rem] 
-              w-full 
-              px-4 
-              py-3 
-              text-base 
-              sm:text-sm 
-              md:text-base 
-              lg:text-lg 
-              xl:text-xl 
-              border 
-              border-gray-300 
-              focus:border-blue-500 
-              focus:ring-2 
-              focus:ring-blue-200 
-              transition-all 
-              duration-300
-            "
+            className="col-span-3 rounded-full h-14 w-full px-4 py-3 text-base border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
             placeholder="Mint Address"
             autoComplete="off"
           />
         </div>
+
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="treasuryAmount" className="text-right text-base text-black">
+            Treasury Amount
+          </Label>
+          <Input
+            id="treasuryAmount"
+            type="number"
+            value={treasuryAmount}
+            onChange={(e) => setTreasuryAmount(e.target.value)}
+            className="col-span-3 rounded-full h-14 w-full px-4 py-3 text-base border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
+            placeholder="Amount to deposit in treasury"
+            autoComplete="off"
+          />
+        </div>
+
         <div className="flex justify-center">
           <Button 
             onClick={() => 
               createVestingAccountMutation.mutateAsync({
                 company_name: newCompany,
-                mint: newMintAddress
+                mint: newMintAddress,
+                treasuryAmount: Number(treasuryAmount)
               })}
-            disabled={createVestingAccountMutation.isPending}
+            disabled={createVestingAccountMutation.isPending || !treasuryAmount}
             className="bg-[#39C3EF] hover:bg-[#39C3EF]/90 text-white"
             style={{
-              boxShadow:
-                "0px -1px 0px 0px #ffffff40 inset, 0px 1px 0px 0px #ffffff40 inset",
+              boxShadow: "0px -1px 0px 0px #ffffff40 inset, 0px 1px 0px 0px #ffffff40 inset",
             }}
           >
             Create New Company Vesting Account

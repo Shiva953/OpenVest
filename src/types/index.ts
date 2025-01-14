@@ -36,6 +36,7 @@ export interface JupToken {
   export interface CreateVestingArgs {
     company_name: string;
     mint: string;
+    treasuryAmount: number,
   }
   
   export interface CreateEmployeeArgs {

@@ -107,7 +107,7 @@ export function useVestingProgram() {
   // create vesting account TXN
   const createVestingAccountMutation = useMutation({
     mutationKey: ["vestingAccount", "create", { cluster }],
-    mutationFn: async({ company_name, mint }: CreateVestingArgs) => {
+    mutationFn: async({ company_name, mint, treasuryAmount }: CreateVestingArgs) => {
       const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
       const apiEndpoint = `${endpoint}/api/createCompanyVesting`
@@ -115,7 +115,8 @@ export function useVestingProgram() {
       const txn_metadata = await axios.post(apiEndpoint, {
         company_name: company_name,
         mint: mint,
-        beneficiary: wallet.publicKey?.toString()!
+        signer: wallet.publicKey?.toString()!,
+        treasuryAmount: treasuryAmount,
       }, {
         headers: {'Content-Type': 'application/json'},
       })
@@ -237,7 +238,8 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
             total_allocation_amount: total_allocation_amount,
             cliff: cliff,
             beneficiary: beneficiary,
-            account: account.toString()
+            account: account.toString(),
+            signer: wallet.publicKey?.toString(),
           }, {
             headers: {'Content-Type': 'application/json'},
           })

@@ -67,12 +67,7 @@ export async function getDecimalsAndSupplyToken(solanaConnection: Connection, to
     let mintPublicKey;
     let mintAccountInfo;
   
-    try {
       mintPublicKey = new PublicKey(tokenMintAddress);
-    } catch (error) {
-      console.error(`mintPublicKey: `, error);
-      return null;
-    }
   
   
     try {
