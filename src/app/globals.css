@@ -80,3 +80,8 @@ body {
     @apply bg-background text-foreground;
     }
 }
+
+.glow-effect-text {
+  text-shadow: 0 0 7px rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.3s ease-in-out;
+}

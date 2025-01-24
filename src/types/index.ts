@@ -1,3 +1,5 @@
+import { BN } from "@coral-xyz/anchor";
+
 export interface JupToken {
     address: string;
     chainId: number;
@@ -45,4 +47,31 @@ export interface JupToken {
     total_allocation_amount: number;
     cliff: number;
     beneficiary: string;
+  }
+
+  export interface AllocationCardParamsT{
+    ownerOfVestingAccountForGivenEmployee: string,
+    start_time: BN,
+    end_time: BN,
+    cliff: number,
+    total_allocation_amount: BN,
+    withdrawn_amount: BN,
+    actualTotalAllocationAmount: number,
+    actualWithdrawnAmount: number,
+    beneficiary: string,
+    companyName: string,
+    token_mint: string
+  }
+
+  export type Token = {
+    address: string
+    decimals: number
+    symbol: string
+    logoURI: string
+  }
+  
+  export interface UseTokenListReturn {
+    tokenList: Token[]
+    isLoading: boolean
+    error: Error | null
   }

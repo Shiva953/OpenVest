@@ -106,7 +106,7 @@ export function AppHero({
   subtitle: ReactNode
 }) {
   return (
-    <div className="hero pb-16">
+    <div className="hero">
       <div className="hero-content text-center">
         <div className="max-w-3xl">
           {typeof title === 'string' ? 
@@ -115,7 +115,7 @@ export function AppHero({
             </h1> 
           : title}
           {typeof subtitle === 'string' ? 
-            <p className="text-xl mb-8 tracking-tight text-white opacity-60 drop-shadow-md text-shadow-md">
+            <p className="text-[1.1rem] font-normal glow-effect-text tracking-tight text-white opacity-80 drop-shadow-md text-shadow-md">
               {subtitle}
             </p> 
           : subtitle}
@@ -161,7 +161,7 @@ export function useTransactionToast() {
             </h3>
           </div>
           <a
-            href={`https://explorer.solana.com/tx/${signature}?cluster=devnet`}
+            href={`https://explorer.solana.com/tx/${signature}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-900/30 hover:bg-blue-900/50 text-blue-400 text-sm font-medium rounded-md transition-colors duration-200"

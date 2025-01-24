@@ -1,18 +1,6 @@
 // useTokenList.ts
 import { useState, useEffect } from 'react'
-
-export type Token = {
-  address: string
-  decimals: number
-  symbol: string
-  logoURI: string
-}
-
-interface UseTokenListReturn {
-  tokenList: Token[]
-  isLoading: boolean
-  error: Error | null
-}
+import { Token,UseTokenListReturn } from '@/types'
 
 export function useTokenList(): UseTokenListReturn {
   const [tokenList, setTokenList] = useState<Token[]>([])

@@ -24,7 +24,6 @@ export function VestingCreate() {
   const [newCompany, setNewCompany] = useState('')
   const [newMintAddress, setNewMintAddress] = useState('');
   const [treasuryAmount, setTreasuryAmount] = useState('');
-  // const [tokenList, setTokenList] = useState<Token[]>([]);
   const { tokenList, isLoading, error } = useTokenList()
   const [selectedToken, setSelectedToken] = useState<Token>({
     address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -68,27 +67,20 @@ export function VestingCreate() {
               autoComplete="off"
             />
           </div>
-          
-          {/* <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
-            <Label htmlFor="mintAddress" className="text-right text-base text-gray-300 md:col-span-1">
-              Token Mint
-            </Label>
-            <Input
-              id="mintAddress"
-              value={newMintAddress}
-              onChange={(e) => setNewMintAddress(e.target.value)}
-              className="md:col-span-3 rounded-full h-14 w-full px-4 py-3 text-base bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-              placeholder="Mint Address"
-              autoComplete="off"
-            />
-          </div> */}
 
       <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
           <Label htmlFor="token" className="text-right text-base text-gray-300 md:col-span-1">
             Token
           </Label>
-          <div className="md:col-span-3">
-            <Select
+          <Input
+              id="mint"
+              type="text"
+              onChange={(e) => setNewMintAddress(e.target.value)}
+              className="md:col-span-3 rounded-full h-14 w-full px-4 py-3 text-base bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+              placeholder={`Token Mint Address`}
+              autoComplete="off"
+            />
+            {/* <Select
               defaultValue="USDC"
               value={selectedToken.address}
               onValueChange={(val) => {
@@ -128,8 +120,7 @@ export function VestingCreate() {
                 ))}
               </SelectGroup>
             </SelectContent>
-          </Select>
-          </div>
+          </Select> */}
         </div>
           <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4">
             <Label htmlFor="treasuryAmount" className="text-right text-base text-gray-300 md:col-span-1">
@@ -141,7 +132,7 @@ export function VestingCreate() {
               value={treasuryAmount}
               onChange={(e) => setTreasuryAmount(e.target.value)}
               className="md:col-span-3 rounded-full h-14 w-full px-4 py-3 text-base bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all duration-300"
-              placeholder={`Amount of ${selectedToken.symbol} to lock in treasury`}
+              placeholder={`Amount of tokens to lock in treasury`}
               autoComplete="off"
             />
           </div>

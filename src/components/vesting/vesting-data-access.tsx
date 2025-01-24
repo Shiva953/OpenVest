@@ -18,6 +18,8 @@ const endpoint = process.env.NODE_ENV === 'development'
       ? 'http://localhost:3000'
       : 'https://openvest.vercel.app';
 
+const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+
 //getting all the vesting accounts, program methods, and defining individual hooks for ops
 //useQuery for fetching Vesting Accounts associated with given programId, useMutation for creating vesting accounts/claiming tokens
 export function useVestingProgram() {
@@ -308,7 +310,6 @@ export function useVestingProgramAccount({ account }: { account: PublicKey }) {
     mutationFn: async () => {
       const employeeVestingAccount = await program.account.employeeVestingAccount.fetch(account); //fetching employee vesting account FROM company vesting account
       const vestingAccount = await program.account.vestingAccount.fetch(employeeVestingAccount.vestingAccount); // fetching relevant vesting account for the given employee account
-
       return program.methods.claimTokens(vestingAccount.companyName)
     .accounts({ 
       tokenProgram: TOKEN_PROGRAM_ID

@@ -5,26 +5,13 @@ import { PublicKey } from '@solana/web3.js'
 import { BN } from "@coral-xyz/anchor"
 import { ExternalLink } from 'lucide-react'
 import useTokenDecimals from '../../hooks/useTokenDecimals';
+import { AllocationCardParamsT } from '@/types';
 import { formatDate, compressPublicKey } from '@/app/lib/utils';
 import { progressPercentageCalc } from '@/app/lib/utils';
 import { useWallet } from '@solana/wallet-adapter-react';
 
-interface AllocationCardParamsT{
-  ownerOfVestingAccountForGivenEmployee: string,
-  start_time: BN,
-  end_time: BN,
-  cliff: number,
-  total_allocation_amount: BN,
-  withdrawn_amount: BN,
-  actualTotalAllocationAmount: number,
-  actualWithdrawnAmount: number,
-  beneficiary: string,
-  companyName: string,
-  token_mint: string
-}
-
 export function AllocationList(){
-    const { getProgramAccount, employeeAccounts, employeeAccountsWithMetadata } = useVestingProgram();
+    const { getProgramAccount, employeeAccountsWithMetadata } = useVestingProgram();
     const wallet = useWallet();
   
     if (getProgramAccount.isLoading) {
@@ -92,159 +79,6 @@ export function AllocationList(){
       </div>
     )
   }
-
-  // export function CompanyList(){
-  //   const { getProgramAccount, vestingAccounts } = useVestingProgram()
-  //   const [selectedCompany, setSelectedCompany] = useState<{account: string, companyName: string} | null>(null);
-
-    
-  //   // Get unique companies
-  //   const uniqueCompanies = useMemo(() => {
-  //     const companyMap = new Map<string, {account: string, companyName: string}>();
-  //     vestingAccounts.data?.forEach((vestingAccount) => {
-  //       const companyName = vestingAccount.account.companyName ?? "Unknown Company";
-  //       if (!companyMap.has(companyName)) {
-  //         companyMap.set(companyName, {
-  //           account: vestingAccount.publicKey.toBase58(),
-  //           companyName: companyName
-  //         });
-  //       }
-  //     });
-  //     return Array.from(companyMap.values());
-  //   }, [vestingAccounts.data]);
-
-  //   if (getProgramAccount.isLoading) {
-  //     return (
-  //       <div className="flex justify-center items-center h-24">
-  //         <span className="loading loading-spinner loading-lg" />
-  //       </div>
-  //     );
-  //   }
-  
-  //   if (!getProgramAccount.data?.value) {
-  //     return (
-  //       <div className="flex justify-center p-2">
-  //         <div className="bg-blue-50 text-black px-4 py-2 rounded-lg max-w-2xl">
-  //           <span>Program account not found. Make sure you have deployed the program and are on the correct cluster.</span>
-  //         </div>
-  //       </div>
-  //     );
-  //   }
-  
-  //   return(
-  //   <>
-  //   <div className="px-4 -mt-4">
-  //   <div className="max-w-7xl mx-auto rounded-xl shadow-sm p-4">
-  //   <div className='flex flex-col space-y-4'>
-  //     {uniqueCompanies.map((company) => (
-  //       <div 
-  //         key={company.companyName}
-  //         className="w-full bg-gray-800 hover:bg-gray-700 transition-colors duration-200 rounded-lg cursor-pointer"
-  //         onClick={() => setSelectedCompany(company)}
-  //       >
-  //         <div className="px-6 py-4 text-white text-lg font-semibold">
-  //           {company.companyName}
-  //         </div>
-  //       </div>
-  //     ))}
-  
-  //     {selectedCompany && (
-  //       <div className="mt-6">
-  //         <EmployeeAllocationsListForGivenCompany 
-  //           account={selectedCompany.account}
-  //           company_name={selectedCompany.companyName} 
-  //         />
-  //       </div>
-  //     )}
-  //   </div>
-  //   </div>
-  //   </div>
-  //   </>
-  //   )
-  // }
-
-  // export function CompanyList(){
-  //   const { vestingAccounts } = useVestingProgram()
-    
-  //   return(
-  //   <>
-  //   <div className='flex-flex col'>
-  //     {/* a company bars list(horizontally full screen width bars listed in vertical order showing company name ) */}
-  //   {vestingAccounts.data?.map((vestingAccount) => {
-  //       const company = vestingAccount.account.companyName ?? "Unknown Company";
-  //       return(
-  //       <>
-  //       {/* company bar(on click should change open the EmployeeAllocationsListForGivenCompany component) */}
-  //       </>)
-  //   })}
-  //   </div>
-  //   </>
-  //   )
-  // }
-
-  // export function EmployeeAllocationsListForGivenCompany({account, company_name} : {account: string, company_name: string}) {
-  //   const { employeeAccounts } = useVestingProgram();
-  //   const provider = useAnchorProvider()
-  //   const clusterNetwork = "devnet";
-  //   const program = getVestingProgram(provider)
-  
-  //   // Explicitly type the state with the correct type
-  //   const [filteredEmployeeAccounts, setFilteredEmployeeAccounts] = useState<ProgramAccount<{
-  //     beneficiary: PublicKey;
-  //     tokenAllocationAmount: BN;
-  //     withdrawnAmount: BN;
-  //     vestingAccount: PublicKey;
-  //     startTime: BN;
-  //     endTime: BN;
-  //     cliff: BN;
-  //     bump: number;
-  //   }>[]>([]);
-  
-  //   useEffect(() => {
-  //     const filterEmployeeAccounts = async () => {
-  //       if (!employeeAccounts.data) return;
-  
-  //       const filtered = await Promise.all(
-  //         employeeAccounts.data.map(async (employeeAccount) => {
-  //           try {
-  //             const getVestingAccountStateQuery = await program.account.vestingAccount.fetch(
-  //               employeeAccount.account.vestingAccount, 
-  //               "confirmed"
-  //             );
-              
-  //             return getVestingAccountStateQuery.companyName === company_name 
-  //               ? employeeAccount 
-  //               : null;
-  //           } catch (error) {
-  //             console.error("Error fetching vesting account:", error);
-  //             return null;
-  //           }
-  //         })
-  //       );
-  
-  //       // Remove null values and set the state
-  //       setFilteredEmployeeAccounts(
-  //         filtered.filter((acc) => acc !== null)
-  //       );
-  //     };
-  
-  //     filterEmployeeAccounts();
-  //   }, [company_name, employeeAccounts.data, program.account.vestingAccount]);
-  
-  //   return (
-  //     <div className='flex flex-col'>
-  //       {filteredEmployeeAccounts.map((acc) => (
-  //             <div 
-  //               key={acc.publicKey.toString()} 
-  //               className="transform transition-all duration-200 hover:scale-[1.02]"
-  //             >
-  //               <AllocationCard account={acc.publicKey.toBase58()} />
-  //             </div>
-  //         )
-  //       )}
-  //     </div>
-  //   );
-  // }
   
 export function AllocationCard({employeeAccount, allocationCardParams} : { employeeAccount: string, allocationCardParams: AllocationCardParamsT }){
   const employee = new PublicKey(employeeAccount);
@@ -259,22 +93,10 @@ export function AllocationCard({employeeAccount, allocationCardParams} : { emplo
   const token_mint = allocationCardParams.token_mint;
   const total_allocation_amount = allocationCardParams.total_allocation_amount;
   const withdrawn_amount = allocationCardParams.withdrawn_amount;
-  // const decimals = useTokenDecimals(tokenMint.toString())
 
-  const actualTotalAllocationAmount = allocationCardParams.actualTotalAllocationAmount;
-  // const actualTotalAllocationAmount = Math.floor(total_allocation_amount?.toNumber() /(10**decimals));
-  // const actualWithdrawnAmount = Math.floor(withdrawn_amount?.toNumber() /(10**decimals));
-  const actualWithdrawnAmount = allocationCardParams.actualWithdrawnAmount;
-  const beneficiary = allocationCardParams.beneficiary;
-
-    // withdrawn amount progress bar
-    // const progressPercentage = useMemo(() => {
-    //   const totalAllocation = parseFloat(total_allocation_amount.toString());
-    //   const withdrawn = parseFloat(withdrawn_amount.toString());
-    //   return totalAllocation > 0 
-    //     ? Math.min((withdrawn / totalAllocation) * 100, 100) 
-    //     : 0;
-    // }, [total_allocation_amount, withdrawn_amount]);
+    const actualTotalAllocationAmount = allocationCardParams.actualTotalAllocationAmount;
+    const actualWithdrawnAmount = allocationCardParams.actualWithdrawnAmount;
+    const beneficiary = allocationCardParams.beneficiary;
     const progressPercentage = progressPercentageCalc(total_allocation_amount, withdrawn_amount)
 
     const isClaimExpired = (Date.now()/1000) > endTime.toNumber();
@@ -290,7 +112,7 @@ export function AllocationCard({employeeAccount, allocationCardParams} : { emplo
               Token allocation for{' '}
               <span className='ml-2 text-medium text-teal-400 z-40'>{compressPublicKey(beneficiary || 'yoben....') }</span>
               <a 
-                  href={beneficiary ? `https://solscan.io/address/${beneficiary}?cluster=devnet` : '#'} 
+                  href={beneficiary ? `https://solscan.io/address/${beneficiary}` : '#'} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="ml-2 z-40"
@@ -343,7 +165,7 @@ export function AllocationCard({employeeAccount, allocationCardParams} : { emplo
                   {compressPublicKey(token_mint)}
                 </p>
                 <a 
-                  href={`https://solscan.io/token/${token_mint}?cluster=devnet`} 
+                  href={`https://solscan.io/token/${token_mint}`} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="text-blue-500 hover:text-blue-700 z-20"

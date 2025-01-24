@@ -12,7 +12,7 @@ export default function VestingFeature() {
   const { publicKey } = useWallet()
 
   return publicKey ? (
-    <div className="flex flex-col z-40 w-full min-h-screen mt--16 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+    <div className="flex flex-col z-40 w-full min-h-screen bg-gradient-to-b from-gray-900 to-black overflow-hidden">
       <div className="absolute inset-0 bg-grid-white/[0.05] pointer-events-none"></div>
       <div className="absolute inset-0 flex items-center justify-center bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
       <div 
