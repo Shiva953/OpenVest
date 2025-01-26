@@ -183,7 +183,7 @@ export default function VestingCard({ account }: { account: string }){
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label className="text-sm font-medium">Cliff Period</Label>
+              <Label className="text-sm font-medium">Cliff Period(In Mins)</Label>
               <Input 
                 type="number" 
                 onChange={(e) => setCliffTime(cliffPeriodToCliffTime(startTime, Number(e.target.value || "0")))}
